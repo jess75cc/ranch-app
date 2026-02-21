@@ -1,3 +1,6 @@
+All tabs now follow the single year dropdown on Home; that one selector controls which year’s data loads/saves everywhere.
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -116,9 +119,10 @@
       <button class="small-btn" onclick="printTab('home')">Export PDF</button>
     </div>
 
+    <!-- SINGLE YEAR SELECTOR (drives all tabs) -->
     <div class="year-row">
       <label for="year_home">Year:</label>
-      <select id="year_home" onchange="handleYearChange('home', this.value)">
+      <select id="year_home" onchange="handleYearChangeAllTabs(this.value)">
         <option value="2026" selected>2026</option>
         <option value="2027">2027</option>
         <option value="2028">2028</option>
@@ -149,23 +153,6 @@
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('inputs')">Print</button>
       <button class="small-btn" onclick="printTab('inputs')">Export PDF</button>
-    </div>
-
-    <div class="year-row">
-      <label for="year_inputs">Year:</label>
-      <select id="year_inputs" onchange="handleYearChange('inputs', this.value)">
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-        <option value="2031">2031</option>
-        <option value="2032">2032</option>
-        <option value="2033">2033</option>
-        <option value="2034">2034</option>
-        <option value="2035">2035</option>
-        <option value="2036">2036</option>
-      </select>
     </div>
 
     <div class="section">
@@ -306,23 +293,6 @@
       <button class="small-btn" onclick="printTab('allotments')">Export PDF</button>
     </div>
 
-    <div class="year-row">
-      <label for="year_allotments">Year:</label>
-      <select id="year_allotments" onchange="handleYearChange('allotments', this.value)">
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-        <option value="2031">2031</option>
-        <option value="2032">2032</option>
-        <option value="2033">2033</option>
-        <option value="2034">2034</option>
-        <option value="2035">2035</option>
-        <option value="2036">2036</option>
-      </select>
-    </div>
-
     <div class="section">
       <h2>Turnout by allotment</h2>
       <table>
@@ -332,8 +302,7 @@
             <th>Cows turned out</th>
           </tr>
         </thead>
-        <tbody id="allotment_body">
-        </tbody>
+        <tbody id="allotment_body"></tbody>
       </table>
       <button class="small-btn" onclick="addAllotmentRow()">+ Add allotment</button>
     </div>
@@ -344,23 +313,6 @@
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('bulls')">Print</button>
       <button class="small-btn" onclick="printTab('bulls')">Export PDF</button>
-    </div>
-
-    <div class="year-row">
-      <label for="year_bulls">Year:</label>
-      <select id="year_bulls" onchange="handleYearChange('bulls', this.value)">
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-        <option value="2031">2031</option>
-        <option value="2032">2032</option>
-        <option value="2033">2033</option>
-        <option value="2034">2034</option>
-        <option value="2035">2035</option>
-        <option value="2036">2036</option>
-      </select>
     </div>
 
     <div class="section">
@@ -376,7 +328,6 @@
 
     <div class="section">
       <h2>Cow herd bulls</h2>
-
       <label>Cow breeding females
         <input id="bulls_cow_breeding" type="number" value="1200" data-tab="bulls">
       </label>
@@ -394,7 +345,6 @@
 
     <div class="section">
       <h2>Heifer bulls</h2>
-
       <label>Heifer breeding females
         <input id="bulls_heifer_breeding" type="number" value="0" data-tab="bulls">
       </label>
@@ -423,8 +373,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="bulls_bought_body">
-        </tbody>
+        <tbody id="bulls_bought_body"></tbody>
       </table>
       <button class="small-btn" onclick="addBullBoughtRow()">+ Add bull purchase</button>
     </div>
@@ -453,23 +402,6 @@
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('calving')">Print</button>
       <button class="small-btn" onclick="printTab('calving')">Export PDF</button>
-    </div>
-
-    <div class="year-row">
-      <label for="year_calving">Year:</label>
-      <select id="year_calving" onchange="handleYearChange('calving', this.value)">
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-        <option value="2031">2031</option>
-        <option value="2032">2032</option>
-        <option value="2033">2033</option>
-        <option value="2034">2034</option>
-        <option value="2035">2035</option>
-        <option value="2036">2036</option>
-      </select>
     </div>
 
     <div class="section">
@@ -508,8 +440,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="branding_body">
-        </tbody>
+        <tbody id="branding_body"></tbody>
       </table>
       <button class="small-btn" onclick="addBrandingRow()">+ Add branding</button>
 
@@ -531,8 +462,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="vaccination_body">
-        </tbody>
+        <tbody id="vaccination_body"></tbody>
       </table>
       <button class="small-btn" onclick="addVaccinationRow()">+ Add vaccination</button>
 
@@ -548,23 +478,6 @@
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('sales')">Print</button>
       <button class="small-btn" onclick="printTab('sales')">Export PDF</button>
-    </div>
-
-    <div class="year-row">
-      <label for="year_sales">Year:</label>
-      <select id="year_sales" onchange="handleYearChange('sales', this.value)">
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-        <option value="2031">2031</option>
-        <option value="2032">2032</option>
-        <option value="2033">2033</option>
-        <option value="2034">2034</option>
-        <option value="2035">2035</option>
-        <option value="2036">2036</option>
-      </select>
     </div>
 
     <div class="section" style="margin-top:0;">
@@ -583,8 +496,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="steer_sales_body">
-        </tbody>
+        <tbody id="steer_sales_body"></tbody>
       </table>
       <button class="small-btn" onclick="addSteerSaleRow()">+ Add steer sale</button>
     </div>
@@ -605,8 +517,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="heifer_sales_body">
-        </tbody>
+        <tbody id="heifer_sales_body"></tbody>
       </table>
       <button class="small-btn" onclick="addHeiferSaleRow()">+ Add heifer sale</button>
     </div>
@@ -626,26 +537,8 @@
       <button class="small-btn" onclick="printTab('blm')">Export PDF</button>
     </div>
 
-    <div class="year-row">
-      <label for="year_blm">Year:</label>
-      <select id="year_blm" onchange="handleYearChange('blm', this.value)">
-        <option value="2026" selected>2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-        <option value="2031">2031</option>
-        <option value="2032">2032</option>
-        <option value="2033">2033</option>
-        <option value="2034">2034</option>
-        <option value="2035">2035</option>
-        <option value="2036">2036</option>
-      </select>
-    </div>
-
     <div class="section">
       <h2>BLM grazing / AUM planner</h2>
-
       <label>Turnout date
         <input id="blm_turnout" type="date" value="2027-03-10" data-tab="blm">
       </label>
@@ -667,8 +560,7 @@
             <th></th>
           </tr>
         </thead>
-        <tbody id="permit_body">
-        </tbody>
+        <tbody id="permit_body"></tbody>
       </table>
       <button class="small-btn" onclick="addPermitRow()">+ Add permit / lease</button>
     </div>
@@ -696,15 +588,19 @@
       return 'gvr_' + tabId + '_' + year;
     }
 
-    function handleYearChange(tabId, year) {
-      currentYearByTab[tabId] = year;
-      loadTabYear(tabId, year);
-      if (tabId === 'inputs' || tabId === 'bulls' || tabId === 'calving' || tabId === 'blm') {
-        recalc();
-      }
-      if (tabId === 'sales') {
-        recalcSales();
-      }
+    // Single year selector on Home controls all tabs
+    function handleYearChangeAllTabs(year) {
+      Object.keys(currentYearByTab).forEach(tabId => {
+        currentYearByTab[tabId] = year;
+      });
+      loadTabYear('inputs', year);
+      loadTabYear('allotments', year);
+      loadTabYear('bulls', year);
+      loadTabYear('calving', year);
+      loadTabYear('sales', year);
+      loadTabYear('blm', year);
+      recalc();
+      recalcSales();
     }
 
     function saveSimpleFields(tabId, year) {
@@ -1355,12 +1251,14 @@
     }
 
     window.addEventListener('load', () => {
-      loadTabYear('inputs', '2026');
-      loadTabYear('allotments', '2026');
-      loadTabYear('bulls', '2026');
-      loadTabYear('calving', '2026');
-      loadTabYear('sales', '2026');
-      loadTabYear('blm', '2026');
+      const initialYear = '2026';
+      document.getElementById('year_home').value = initialYear;
+      loadTabYear('inputs', initialYear);
+      loadTabYear('allotments', initialYear);
+      loadTabYear('bulls', initialYear);
+      loadTabYear('calving', initialYear);
+      loadTabYear('sales', initialYear);
+      loadTabYear('blm', initialYear);
       recalc();
       recalcSales();
     });
@@ -1374,3 +1272,4 @@
   </script>
 </body>
 </html>
+```
