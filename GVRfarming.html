@@ -1,1 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Grass Valley Ranch – Farming</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 8px; }
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    h2 { font-size: 16px; margin: 8px 0 4px; }
+    h3 { font-size: 14px; margin: 8px 0 4px; }
+    .tabs { display: flex; margin-bottom: 8px; flex-wrap: wrap; }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .tab.active { background: #ddd; }
+    .tabcontent { display: none; position: relative; }
+    .tabcontent.active { display: block; }
+    .section {
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    label { display: block; font-size: 13px; margin-top: 4px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+    textarea.notes_box {
+      resize: vertical;
+      font-family: Arial, sans-serif;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
+    th { background: #eee; }
+    button {
+      padding: 7px 10px;
+      margin-top: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .small-btn {
+      width: auto;
+      padding: 5px 8px;
+      margin-top: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .print-bar {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+    .img-preview {
+      max-width: 80px;
+      max-height: 80px;
+      display: block;
+      margin-top: 4px;
+    }
+    .notes_preview {
+      margin-top: 4px;
+      font-size: 11px;
+    }
+    .notes_preview > div {
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Grass Valley Ranch – Farming</h1>
+  <div>Crop yields, inputs, hay sales, and organic tilth logbook</div>
 
+  <div class="tabs">
+    <div class="tab active" data-tab="yields">Crop Yields</div>
+    <div class="tab" data-tab="inputs">Inputs</div>
+    <div class="tab" data-tab="hay_sales">Hay Sales</div>
+    <div class="tab" data-tab="logbook">Organic Tilth Logbook</div>
+  </div>
+
+  <!-- CROP YIELDS -->
+  <div id="yields" class="tabcontent active">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('yields')">Print</button>
+      <button class="small-btn" onclick="printTab('yields')">Export PDF</button>
+    </div>
+
+    <div class="section">
+      <h2>Crop yields by cutting and field</h2>
+
+      <h3>1st Cutting</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Yield (tons)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>13</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>14</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>15</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>16</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>17</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>8A</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>8B</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Huntfield</td><td><input type="number"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+
+      <h3>2nd Cutting</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Yield (tons)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>13</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>14</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>15</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>16</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>17</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>8A</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>8B</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Huntfield</td><td><input type="number"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+
+      <h3>3rd Cutting</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Yield (tons)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>13</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>14</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>15</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>16</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>17</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>8A</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>8B</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Huntfield</td><td><input type="number"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Notes & attachments – crop yields</h2>
+      <textarea class="notes_box" rows="3" placeholder="General notes for crop yields..."></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
+    </div>
+  </div>
+
+  <!-- INPUTS -->
+  <div id="inputs" class="tabcontent">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('inputs')">Print</button>
+      <button class="small-btn" onclick="printTab('inputs')">Export PDF</button>
+    </div>
+
+    <div class="section">
+      <h2>Farm inputs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Amount / units</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Fertilizer</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Diesel</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Twine</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Seed</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Equipment cost</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Mechanic bills</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Equipment purchases</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Pivot cost</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Tires</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr><td>Sprinklers</td><td><input type="number"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Notes & attachments – inputs</h2>
+      <textarea class="notes_box" rows="3" placeholder="General notes for inputs..."></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
+    </div>
+  </div>
+
+  <!-- HAY SALES -->
+  <div id="hay_sales" class="tabcontent">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('hay_sales')">Print</button>
+      <button class="small-btn" onclick="printTab('hay_sales')">Export PDF</button>
+    </div>
+
+    <div class="section">
+      <h2>Hay sales</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Buyer / Lot</th>
+            <th>Crop type</th>
+            <th>Tons or bales</th>
+            <th>Price per unit</th>
+            <th>Total $</th>
+            <th>Picture / Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="hay_sales_body">
+          <!-- rows added by JS -->
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addHaySaleRow()">+ Add hay sale</button>
+    </div>
+
+    <div class="section">
+      <h2>Totals</h2>
+      <div>Total hay sales: <span id="hay_sales_total">–</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Notes & attachments – hay sales</h2>
+      <textarea class="notes_box" rows="3" placeholder="General notes for hay sales..."></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
+    </div>
+  </div>
+
+  <!-- ORGANIC TILTH LOGBOOK -->
+  <div id="logbook" class="tabcontent">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('logbook')">Print</button>
+      <button class="small-btn" onclick="printTab('logbook')">Export PDF</button>
+    </div>
+
+    <div class="section">
+      <h2>Organic Tilth logbook</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Field</th>
+            <th>Event</th>
+            <th>Washed</th>
+            <th>Input to fields</th>
+            <th>Harvest amount</th>
+            <th>Crop type</th>
+            <th>Location or Bale</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="logbook_body">
+          <!-- rows added by JS -->
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addLogbookRow()">+ Add log entry</button>
+    </div>
+
+    <div class="section">
+      <h2>Notes & attachments – logbook</h2>
+      <textarea class="notes_box" rows="3" placeholder="General notes for Organic Tilth logbook..."></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
+    </div>
+  </div>
+
+  <script>
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tabcontent').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(id).classList.add('active');
+      });
+    });
+
+    // Print / PDF (uses browser print on that tab content) [web:178]
+    function printTab(tabId) {
+      const tabContent = document.getElementById(tabId);
+      if (!tabContent) return;
+      const w = window.open('', '', 'width=900,height=700');
+      w.document.write('<html><head><title>Print - ' + tabId + '</title>');
+      w.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}table{width:100%;border-collapse:collapse;font-size:12px;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button{display:none;}.print-bar{display:none;}</style>');
+      w.document.write('</head><body>');
+      w.document.write(tabContent.innerHTML);
+      w.document.write('</body></html>');
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    // Notes / attachment preview [web:176][web:179]
+    function previewNotesFiles(input) {
+      const preview = input.parentElement.querySelector('.notes_preview');
+      if (!preview) return;
+      preview.innerHTML = '';
+      const files = input.files || [];
+      Array.from(files).forEach(file => {
+        const item = document.createElement('div');
+        if (file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.className = 'img-preview';
+          const reader = new FileReader();
+          reader.onload = e => { img.src = e.target.result; };
+          reader.readAsDataURL(file);
+          item.appendChild(img);
+          const label = document.createElement('div');
+          label.textContent = file.name;
+          item.appendChild(label);
+        } else {
+          item.textContent = '📄 ' + file.name;
+        }
+        preview.appendChild(item);
+      });
+    }
+
+    function formatMoney(x) {
+      return '$' + x.toLocaleString(undefined, {maximumFractionDigits: 0});
+    }
+
+    // Hay sales table
+    function addHaySaleRow(rowData) {
+      const body = document.getElementById('hay_sales_body');
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="hay_date" value="' + (r.date || '') + '"></td>' +
+        '<td><input type="text" class="hay_buyer" value="' + (r.buyer || '') + '"></td>' +
+        '<td><input type="text" class="hay_crop" value="' + (r.crop || '') + '"></td>' +
+        '<td><input type="number" class="hay_units" value="' + (r.units || '') + '" oninput="updateHayRow(this)"></td>' +
+        '<td><input type="number" class="hay_price" step="0.01" value="' + (r.price || '') + '" oninput="updateHayRow(this)"></td>' +
+        '<td><span class="hay_total">' + (r.total || '$0') + '</span></td>' +
+        '<td>' +
+          '<input type="file" accept="image/*" class="hay_img_input" onchange="previewImage(this)">' +
+          '<img class="img-preview" style="display:none;">' +
+          '<input type="text" class="hay_notes" placeholder="Notes" value="' + (r.notes || '') + '">' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcHaySales();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function previewImage(input) {
+      const file = input.files && input.files[0];
+      const img = input.parentElement.querySelector('.img-preview');
+      if (!file) {
+        if (img) img.style.display = 'none';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        img.src = e.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateHayRow(el) {
+      const tr = el.closest('tr');
+      const units = Number(tr.querySelector('.hay_units').value || 0);
+      const price = Number(tr.querySelector('.hay_price').value || 0);
+      const total = units * price;
+      tr.querySelector('.hay_total').textContent = formatMoney(total);
+      recalcHaySales();
+    }
+
+    function recalcHaySales() {
+      let sum = 0;
+      document.querySelectorAll('#hay_sales_body .hay_total').forEach(span => {
+        const txt = span.textContent.replace('$','').replace(/,/g,'');
+        sum += Number(txt || 0);
+      });
+      document.getElementById('hay_sales_total').textContent = formatMoney(sum);
+    }
+
+    // Organic logbook
+    function addLogbookRow(rowData) {
+      const body = document.getElementById('logbook_body');
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="log_date" value="' + (r.date || '') + '"></td>' +
+        '<td><input type="text" class="log_field" value="' + (r.field || '') + '"></td>' +
+        '<td><input type="text" class="log_event" value="' + (r.event || '') + '"></td>' +
+        '<td><input type="text" class="log_washed" value="' + (r.washed || '') + '"></td>' +
+        '<td><input type="text" class="log_input" value="' + (r.input || '') + '"></td>' +
+        '<td><input type="text" class="log_harvest" value="' + (r.harvest || '') + '"></td>' +
+        '<td><input type="text" class="log_crop" value="' + (r.crop || '') + '"></td>' +
+        '<td><input type="text" class="log_location" value="' + (r.location || '') + '"></td>' +
+        '<td><input type="text" class="log_notes" value="' + (r.notes || '') + '"></td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    // Initialize dynamic tables
+    window.addEventListener('load', () => {
+      if (!document.getElementById('hay_sales_body').children.length) {
+        addHaySaleRow();
+      }
+      if (!document.getElementById('logbook_body').children.length) {
+        addLogbookRow();
+      }
+    });
+  </script>
+</body>
+</html>
