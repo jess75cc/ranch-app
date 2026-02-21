@@ -1,4 +1,4 @@
-Here is the full current `index.html` including all notes/attachments areas, bull purchases, and bull turnout/bring‑in dates:
+Here is the entire HTML file with all changes and additions (notes/attachments, bulls bought, bull turnout dates, year dropdowns, and per‑year save/load with `localStorage`):
 
 ```html
 <!DOCTYPE html>
@@ -80,6 +80,22 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       margin-bottom: 4px;
       font-size: 12px;
     }
+    .year-row {
+      margin-top: 32px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .year-row label {
+      margin: 0;
+      width: auto;
+      font-weight: bold;
+    }
+    .year-row select {
+      width: auto;
+      min-width: 100px;
+    }
   </style>
 </head>
 <body>
@@ -102,7 +118,15 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('home')">Print</button>
       <button class="small-btn" onclick="printTab('home')">Export PDF</button>
     </div>
-    <div class="section" style="margin-top:32px;">
+
+    <div class="year-row">
+      <label for="year_home">Year:</label>
+      <select id="year_home" onchange="handleYearChange('home', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section">
       <h2>Quick Stats</h2>
       <div class="kpi">Breeding females: <span id="kpi_breeding_females">–</span></div>
       <div class="kpi">Total bulls to run: <span id="kpi_total_bulls">–</span></div>
@@ -119,29 +143,37 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('inputs')">Print</button>
       <button class="small-btn" onclick="printTab('inputs')">Export PDF</button>
     </div>
-    <div class="section" style="margin-top:32px;">
+
+    <div class="year-row">
+      <label for="year_inputs">Year:</label>
+      <select id="year_inputs" onchange="handleYearChange('inputs', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section">
       <h2>Herd counts (head)</h2>
       <label>Bred cows
-        <input id="bred_cows" type="number" value="1000">
+        <input id="bred_cows" type="number" value="1000" data-tab="inputs">
       </label>
       <label>Bred heifers
-        <input id="bred_heifers" type="number" value="0">
+        <input id="bred_heifers" type="number" value="0" data-tab="inputs">
       </label>
       <label>Replacement heifers (open)
-        <input id="repl_heifers_open" type="number" value="200">
+        <input id="repl_heifers_open" type="number" value="200" data-tab="inputs">
       </label>
       <label>Dry cows
-        <input id="dry_cows" type="number" value="0">
+        <input id="dry_cows" type="number" value="0" data-tab="inputs">
       </label>
       <label>Cull cows
-        <input id="cull_cows" type="number" value="0">
+        <input id="cull_cows" type="number" value="0" data-tab="inputs">
       </label>
       <label>Other (enter)
-        <input id="other_cows" type="number" value="0">
+        <input id="other_cows" type="number" value="0" data-tab="inputs">
       </label>
 
       <h3 style="margin-top:10px;">Notes & attachments</h3>
-      <textarea class="notes_box" rows="3" placeholder="Notes about herd counts..."></textarea>
+      <textarea class="notes_box" rows="3" placeholder="Notes about herd counts..." id="notes_herd_counts" data-tab="inputs"></textarea>
       <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
       <div class="notes_preview"></div>
     </div>
@@ -152,39 +184,39 @@ Here is the full current `index.html` including all notes/attachments areas, bul
 
       <h3 style="font-size:14px;margin:4px 0;">Eli</h3>
       <label>Eli bred
-        <input id="eli_bred" type="number" value="0">
+        <input id="eli_bred" type="number" value="0" data-tab="inputs">
       </label>
       <label>Eli dry
-        <input id="eli_dry" type="number" value="0">
+        <input id="eli_dry" type="number" value="0" data-tab="inputs">
       </label>
       <label>Eli sold
-        <input id="eli_sold" type="number" value="0">
+        <input id="eli_sold" type="number" value="0" data-tab="inputs">
       </label>
 
       <h3 style="font-size:14px;margin:6px 0 4px;">Amelia</h3>
       <label>Amelia bred
-        <input id="amelia_bred" type="number" value="0">
+        <input id="amelia_bred" type="number" value="0" data-tab="inputs">
       </label>
       <label>Amelia dry
-        <input id="amelia_dry" type="number" value="0">
+        <input id="amelia_dry" type="number" value="0" data-tab="inputs">
       </label>
       <label>Amelia sold
-        <input id="amelia_sold" type="number" value="0">
+        <input id="amelia_sold" type="number" value="0" data-tab="inputs">
       </label>
 
       <h3 style="font-size:14px;margin:6px 0 4px;">Logan</h3>
       <label>Logan bred
-        <input id="logan_bred" type="number" value="0">
+        <input id="logan_bred" type="number" value="0" data-tab="inputs">
       </label>
       <label>Logan dry
-        <input id="logan_dry" type="number" value="0">
+        <input id="logan_dry" type="number" value="0" data-tab="inputs">
       </label>
       <label>Logan sold
-        <input id="logan_sold" type="number" value="0">
+        <input id="logan_sold" type="number" value="0" data-tab="inputs">
       </label>
 
       <h3 style="margin-top:10px;">Notes & attachments</h3>
-      <textarea class="notes_box" rows="3" placeholder="Notes about Eli / Amelia / Logan cows..."></textarea>
+      <textarea class="notes_box" rows="3" placeholder="Notes about Eli / Amelia / Logan cows..." id="notes_family_cows" data-tab="inputs"></textarea>
       <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
       <div class="notes_preview"></div>
     </div>
@@ -192,26 +224,26 @@ Here is the full current `index.html` including all notes/attachments areas, bul
     <div class="section">
       <h2>Breeding & production</h2>
       <label>Bull ratio (females per bull)
-        <input id="bull_ratio" type="number" value="11">
+        <input id="bull_ratio" type="number" value="11" data-tab="inputs">
       </label>
       <label>Backup bulls (% of required)
-        <input id="backup_bulls_pct" type="number" step="0.01" value="5">
+        <input id="backup_bulls_pct" type="number" step="0.01" value="5" data-tab="inputs">
       </label>
       <label>Weaning rate (%) (calf crop)
-        <input id="weaning_rate" type="number" step="0.01" value="92">
+        <input id="weaning_rate" type="number" step="0.01" value="92" data-tab="inputs">
       </label>
       <label>Steer % of calf crop
-        <input id="steer_pct" type="number" step="0.01" value="50">
+        <input id="steer_pct" type="number" step="0.01" value="50" data-tab="inputs">
       </label>
       <label>Heifer % of calf crop
-        <input id="heifer_pct" type="number" step="0.01" value="50">
+        <input id="heifer_pct" type="number" step="0.01" value="50" data-tab="inputs">
       </label>
       <label>Replacement heifers kept (head)
-        <input id="repl_heifers_kept" type="number" value="200">
+        <input id="repl_heifers_kept" type="number" value="200" data-tab="inputs">
       </label>
 
       <h3 style="margin-top:10px;">Notes & attachments</h3>
-      <textarea class="notes_box" rows="3" placeholder="Notes about breeding & production..."></textarea>
+      <textarea class="notes_box" rows="3" placeholder="Notes about breeding & production..." id="notes_breeding" data-tab="inputs"></textarea>
       <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
       <div class="notes_preview"></div>
     </div>
@@ -219,36 +251,36 @@ Here is the full current `index.html` including all notes/attachments areas, bul
     <div class="section">
       <h2>Winter feed settings</h2>
       <label>Feed start date
-        <input id="feed_start" type="date" value="2026-11-01">
+        <input id="feed_start" type="date" value="2026-11-01" data-tab="inputs">
       </label>
       <label>Feed end date
-        <input id="feed_end" type="date" value="2027-03-15">
+        <input id="feed_end" type="date" value="2027-03-15" data-tab="inputs">
       </label>
       <label>Cows hay intake (lb/day)
-        <input id="cow_intake" type="number" value="30">
+        <input id="cow_intake" type="number" value="30" data-tab="inputs">
       </label>
       <label>Heifers hay intake (lb/day)
-        <input id="heifer_intake" type="number" value="26">
+        <input id="heifer_intake" type="number" value="26" data-tab="inputs">
       </label>
       <label>Bulls hay intake (lb/day)
-        <input id="bull_intake" type="number" value="28">
+        <input id="bull_intake" type="number" value="28" data-tab="inputs">
       </label>
       <label>Hay waste/shrink (%)
-        <input id="hay_waste" type="number" step="0.01" value="10">
+        <input id="hay_waste" type="number" step="0.01" value="10" data-tab="inputs">
       </label>
       <label>Hay cost ($/ton)
-        <input id="hay_cost" type="number" step="0.01" value="180">
+        <input id="hay_cost" type="number" step="0.01" value="180" data-tab="inputs">
       </label>
     </div>
 
     <div class="section">
       <h2>BLM / AUM settings</h2>
       <label>AUM per cow-month
-        <input id="aum_per_cow" type="number" step="0.01" value="1">
+        <input id="aum_per_cow" type="number" step="0.01" value="1" data-tab="inputs">
       </label>
     </div>
 
-    <button onclick="recalc()">Save & Recalculate</button>
+    <button onclick="saveCurrentTabYear('inputs'); recalc();">Save & Recalculate</button>
   </div>
 
   <!-- ALLOTMENTS -->
@@ -257,7 +289,15 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('allotments')">Print</button>
       <button class="small-btn" onclick="printTab('allotments')">Export PDF</button>
     </div>
-    <div class="section" style="margin-top:32px;">
+
+    <div class="year-row">
+      <label for="year_allotments">Year:</label>
+      <select id="year_allotments" onchange="handleYearChange('allotments', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section">
       <h2>Turnout by allotment</h2>
       <table>
         <thead>
@@ -280,13 +320,20 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('bulls')">Export PDF</button>
     </div>
 
-    <div class="section" style="margin-top:32px;">
+    <div class="year-row">
+      <label for="year_bulls">Year:</label>
+      <select id="year_bulls" onchange="handleYearChange('bulls', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section">
       <h2>Bull turnout schedule</h2>
       <label>Bull turnout date
-        <input id="bull_turnout_date" type="date" value="">
+        <input id="bull_turnout_date" type="date" value="" data-tab="bulls">
       </label>
       <label>Bull bring-in date
-        <input id="bull_bringin_date" type="date" value="">
+        <input id="bull_bringin_date" type="date" value="" data-tab="bulls">
       </label>
       <div class="kpi">Days with bulls: <span id="bull_days_out">–</span></div>
     </div>
@@ -295,13 +342,13 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <h2>Cow herd bulls</h2>
 
       <label>Cow breeding females
-        <input id="bulls_cow_breeding" type="number" value="1200">
+        <input id="bulls_cow_breeding" type="number" value="1200" data-tab="bulls">
       </label>
       <label>Cow females per bull (ratio)
-        <input id="bulls_cow_ratio" type="number" value="11">
+        <input id="bulls_cow_ratio" type="number" value="11" data-tab="bulls">
       </label>
       <label>Cow backup bulls (% of required)
-        <input id="bulls_cow_backup_pct" type="number" step="0.01" value="5">
+        <input id="bulls_cow_backup_pct" type="number" step="0.01" value="5" data-tab="bulls">
       </label>
 
       <div class="kpi">Cow required bulls: <span id="bulls_cow_required">–</span></div>
@@ -313,13 +360,13 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <h2>Heifer bulls</h2>
 
       <label>Heifer breeding females
-        <input id="bulls_heifer_breeding" type="number" value="0">
+        <input id="bulls_heifer_breeding" type="number" value="0" data-tab="bulls">
       </label>
       <label>Heifer females per bull (ratio)
-        <input id="bulls_heifer_ratio" type="number" value="15">
+        <input id="bulls_heifer_ratio" type="number" value="15" data-tab="bulls">
       </label>
       <label>Heifer backup bulls (% of required)
-        <input id="bulls_heifer_backup_pct" type="number" step="0.01" value="5">
+        <input id="bulls_heifer_backup_pct" type="number" step="0.01" value="5" data-tab="bulls">
       </label>
 
       <div class="kpi">Heifer required bulls: <span id="bulls_heifer_required">–</span></div>
@@ -371,22 +418,30 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('calving')">Print</button>
       <button class="small-btn" onclick="printTab('calving')">Export PDF</button>
     </div>
-    <div class="section" style="margin-top:32px;">
+
+    <div class="year-row">
+      <label for="year_calving">Year:</label>
+      <select id="year_calving" onchange="handleYearChange('calving', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section">
       <h2>Calving assumptions</h2>
       <label>Breeding females
-        <input id="calv_breeding_input" type="number" value="1200">
+        <input id="calv_breeding_input" type="number" value="1200" data-tab="calving">
       </label>
       <label>Weaning / calf crop rate (%)
-        <input id="calv_weaning_rate_input" type="number" step="0.01" value="92">
+        <input id="calv_weaning_rate_input" type="number" step="0.01" value="92" data-tab="calving">
       </label>
       <label>Steer % of calf crop
-        <input id="calv_steer_pct_input" type="number" step="0.01" value="50">
+        <input id="calv_steer_pct_input" type="number" step="0.01" value="50" data-tab="calving">
       </label>
       <label>Heifer % of calf crop
-        <input id="calv_heifer_pct_input" type="number" step="0.01" value="50">
+        <input id="calv_heifer_pct_input" type="number" step="0.01" value="50" data-tab="calving">
       </label>
       <label>Replacement heifers kept (head)
-        <input id="calv_repl_kept_input" type="number" value="200">
+        <input id="calv_repl_kept_input" type="number" value="200" data-tab="calving">
       </label>
 
       <div class="kpi">Weaned calves: <span id="calv_weaned">–</span></div>
@@ -413,7 +468,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="addBrandingRow()">+ Add branding</button>
 
       <h3 style="margin-top:10px;">Notes & attachments (branding)</h3>
-      <textarea class="notes_box" rows="3" placeholder="General notes about branding..."></textarea>
+      <textarea class="notes_box" rows="3" placeholder="General notes about branding..." id="notes_branding" data-tab="calving"></textarea>
       <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
       <div class="notes_preview"></div>
     </div>
@@ -436,7 +491,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="addVaccinationRow()">+ Add vaccination</button>
 
       <h3 style="margin-top:10px;">Notes & attachments (vaccinations)</h3>
-      <textarea class="notes_box" rows="3" placeholder="General notes about vaccinations..."></textarea>
+      <textarea class="notes_box" rows="3" placeholder="General notes about vaccinations..." id="notes_vaccinations" data-tab="calving"></textarea>
       <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
       <div class="notes_preview"></div>
     </div>
@@ -448,7 +503,15 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('sales')">Print</button>
       <button class="small-btn" onclick="printTab('sales')">Export PDF</button>
     </div>
-    <div class="section" style="margin-top:32px;">
+
+    <div class="year-row">
+      <label for="year_sales">Year:</label>
+      <select id="year_sales" onchange="handleYearChange('sales', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section" style="margin-top:0;">
       <h2>Steer sales</h2>
       <table>
         <thead>
@@ -506,14 +569,22 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       <button class="small-btn" onclick="printTab('blm')">Print</button>
       <button class="small-btn" onclick="printTab('blm')">Export PDF</button>
     </div>
-    <div class="section" style="margin-top:32px;">
+
+    <div class="year-row">
+      <label for="year_blm">Year:</label>
+      <select id="year_blm" onchange="handleYearChange('blm', this.value)">
+        <option value="2026" selected>2026</option>
+      </select>
+    </div>
+
+    <div class="section">
       <h2>BLM grazing / AUM planner</h2>
 
       <label>Turnout date
-        <input id="blm_turnout" type="date" value="2027-03-10">
+        <input id="blm_turnout" type="date" value="2027-03-10" data-tab="blm">
       </label>
       <label>Pull-off date
-        <input id="blm_pulloff" type="date" value="2027-10-31">
+        <input id="blm_pulloff" type="date" value="2027-10-31" data-tab="blm">
       </label>
 
       <div class="kpi">Grazing days: <span id="blm_days">–</span></div>
@@ -545,6 +616,321 @@ Here is the full current `index.html` including all notes/attachments areas, bul
   </div>
 
   <script>
+    // Year state per tab
+    const currentYearByTab = {
+      home: '2026',
+      inputs: '2026',
+      allotments: '2026',
+      bulls: '2026',
+      calving: '2026',
+      sales: '2026',
+      blm: '2026',
+    };
+
+    function storageKey(tabId, year) {
+      return 'gvr_' + tabId + '_' + year;
+    }
+
+    function handleYearChange(tabId, year) {
+      currentYearByTab[tabId] = year;
+      loadTabYear(tabId, year);
+      if (tabId === 'inputs' || tabId === 'bulls' || tabId === 'calving' || tabId === 'blm') {
+        recalc();
+      }
+      if (tabId === 'sales') {
+        recalcSales();
+      }
+    }
+
+    // Save/load simple inputs & textareas
+    function saveSimpleFields(tabId, year) {
+      const data = {};
+      document.querySelectorAll('[data-tab="' + tabId + '"]').forEach(el => {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          data[el.id] = el.value;
+        }
+      });
+      localStorage.setItem(storageKey(tabId, year) + '_fields', JSON.stringify(data));
+    }
+
+    function loadSimpleFields(tabId, year) {
+      const raw = localStorage.getItem(storageKey(tabId, year) + '_fields');
+      if (!raw) return;
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      });
+    }
+
+    // Allotments
+    function saveAllotments(year) {
+      const rows = [];
+      document.querySelectorAll('#allotment_body tr').forEach(tr => {
+        const tds = tr.querySelectorAll('td input');
+        if (tds.length === 2) {
+          rows.push({ name: tds[0].value, head: tds[1].value });
+        }
+      });
+      localStorage.setItem(storageKey('allotments', year) + '_rows', JSON.stringify(rows));
+    }
+
+    function loadAllotments(year) {
+      const body = document.getElementById('allotment_body');
+      body.innerHTML = '';
+      const raw = localStorage.getItem(storageKey('allotments', year) + '_rows');
+      if (raw) {
+        try {
+          const rows = JSON.parse(raw);
+          if (Array.isArray(rows) && rows.length) {
+            rows.forEach(r => addAllotmentRow(r.name, r.head));
+            return;
+          }
+        } catch {}
+      }
+      for (let i = 1; i <= 5; i++) addAllotmentRow('Allotment ' + i, '');
+    }
+
+    // Permits
+    function savePermits(year) {
+      const rows = [];
+      document.querySelectorAll('#permit_body tr').forEach(tr => {
+        const name = tr.querySelector('.permit_name');
+        const aums = tr.querySelector('.permit_aums');
+        if (name && aums) {
+          rows.push({ name: name.value, aums: aums.value });
+        }
+      });
+      localStorage.setItem(storageKey('blm', year) + '_permits', JSON.stringify(rows));
+    }
+
+    function loadPermits(year) {
+      const body = document.getElementById('permit_body');
+      body.innerHTML = '';
+      const raw = localStorage.getItem(storageKey('blm', year) + '_permits');
+      if (raw) {
+        try {
+          const rows = JSON.parse(raw);
+          if (Array.isArray(rows) && rows.length) {
+            rows.forEach(r => addPermitRow(r.name, r.aums));
+            return;
+          }
+        } catch {}
+      }
+      addPermitRow('Main BLM', '');
+      addPermitRow('Private lease', '');
+    }
+
+    // Branding
+    function saveBrandings(year) {
+      const rows = [];
+      document.querySelectorAll('#branding_body tr').forEach(tr => {
+        const name = tr.querySelector('.brand_name');
+        const date = tr.querySelector('.brand_date');
+        const calves = tr.querySelector('.brand_calves');
+        const notes = tr.querySelector('.brand_notes');
+        if (name) {
+          rows.push({
+            name: name.value,
+            date: date ? date.value : '',
+            calves: calves ? calves.value : '',
+            notes: notes ? notes.value : '',
+          });
+        }
+      });
+      localStorage.setItem(storageKey('calving', year) + '_brandings', JSON.stringify(rows));
+    }
+
+    function loadBrandings(year) {
+      const body = document.getElementById('branding_body');
+      body.innerHTML = '';
+      const raw = localStorage.getItem(storageKey('calving', year) + '_brandings');
+      if (raw) {
+        try {
+          const rows = JSON.parse(raw);
+          if (Array.isArray(rows) && rows.length) {
+            rows.forEach(r => addBrandingRow(r.name, r.date, r.calves, r.notes));
+            return;
+          }
+        } catch {}
+      }
+      addBrandingRow('Home ranch', '', '', '');
+      addBrandingRow('BLM allotment', '', '', '');
+    }
+
+    // Vaccinations
+    function saveVaccinations(year) {
+      const rows = [];
+      document.querySelectorAll('#vaccination_body tr').forEach(tr => {
+        const date = tr.querySelector('.vacc_date');
+        const product = tr.querySelector('.vacc_product');
+        const head = tr.querySelector('.vacc_head');
+        const notes = tr.querySelector('.vacc_notes');
+        if (date || product) {
+          rows.push({
+            date: date ? date.value : '',
+            product: product ? product.value : '',
+            head: head ? head.value : '',
+            notes: notes ? notes.value : '',
+          });
+        }
+      });
+      localStorage.setItem(storageKey('calving', year) + '_vaccinations', JSON.stringify(rows));
+    }
+
+    function loadVaccinations(year) {
+      const body = document.getElementById('vaccination_body');
+      body.innerHTML = '';
+      const raw = localStorage.getItem(storageKey('calving', year) + '_vaccinations');
+      if (raw) {
+        try {
+          const rows = JSON.parse(raw);
+          if (Array.isArray(rows) && rows.length) {
+            rows.forEach(r => addVaccinationRow(r.date, r.product, r.head, r.notes));
+            return;
+          }
+        } catch {}
+      }
+      addVaccinationRow('', '', '', '');
+    }
+
+    // Bulls bought
+    function saveBullsBought(year) {
+      const rows = [];
+      document.querySelectorAll('#bulls_bought_body tr').forEach(tr => {
+        const date = tr.querySelector('.bull_date');
+        const num = tr.querySelector('.bull_num');
+        const price = tr.querySelector('.bull_price');
+        const loc = tr.querySelector('.bull_location');
+        const notes = tr.querySelector('.bull_notes');
+        if (date || num || price || loc) {
+          rows.push({
+            date: date ? date.value : '',
+            num: num ? num.value : '',
+            price: price ? price.value : '',
+            location: loc ? loc.value : '',
+            notes: notes ? notes.value : '',
+          });
+        }
+      });
+      localStorage.setItem(storageKey('bulls', year) + '_bought', JSON.stringify(rows));
+    }
+
+    function loadBullsBought(year) {
+      const body = document.getElementById('bulls_bought_body');
+      body.innerHTML = '';
+      const raw = localStorage.getItem(storageKey('bulls', year) + '_bought');
+      if (raw) {
+        try {
+          const rows = JSON.parse(raw);
+          if (Array.isArray(rows) && rows.length) {
+            rows.forEach(r => addBullBoughtRow(r.date, r.num, r.price, r.location, r.notes));
+            return;
+          }
+        } catch {}
+      }
+      addBullBoughtRow('', '', '', '', '');
+    }
+
+    // Sales
+    function saveSales(year) {
+      function grab(bodyId) {
+        const rows = [];
+        document.querySelectorAll('#' + bodyId + ' tr').forEach(tr => {
+          const date = tr.querySelector('.sale_date');
+          const lot = tr.querySelector('.sale_lot');
+          const type = tr.querySelector('.sale_type');
+          const head = tr.querySelector('.sale_head');
+          const wt = tr.querySelector('.sale_wt');
+          const price = tr.querySelector('.sale_price');
+          const notes = tr.querySelector('.sale_notes');
+          const totalSpan = tr.querySelector('.sale_total_display');
+          if (date || lot || head) {
+            rows.push({
+              date: date ? date.value : '',
+              lot: lot ? lot.value : '',
+              type: type ? type.value : '',
+              head: head ? head.value : '',
+              wt: wt ? wt.value : '',
+              price: price ? price.value : '',
+              notes: notes ? notes.value : '',
+              total: totalSpan ? totalSpan.textContent : '',
+            });
+          }
+        });
+        return rows;
+      }
+      const steerRows = grab('steer_sales_body');
+      const heiferRows = grab('heifer_sales_body');
+      localStorage.setItem(storageKey('sales', year) + '_steers', JSON.stringify(steerRows));
+      localStorage.setItem(storageKey('sales', year) + '_heifers', JSON.stringify(heiferRows));
+    }
+
+    function loadSales(year) {
+      function fill(bodyId, rows) {
+        const body = document.getElementById(bodyId);
+        body.innerHTML = '';
+        if (!rows || !rows.length) return;
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td><input type="date" class="sale_date" value="' + (r.date || '') + '"></td>' +
+            '<td><input type="text" class="sale_lot" value="' + (r.lot || '') + '"></td>' +
+            '<td><input type="text" class="sale_type" value="' + (r.type || '') + '"></td>' +
+            '<td><input type="number" class="sale_head" value="' + (r.head || '') + '" oninput="updateSaleRow(this)"></td>' +
+            '<td><input type="number" class="sale_wt" value="' + (r.wt || '') + '" oninput="updateSaleRow(this)"></td>' +
+            '<td><input type="number" class="sale_price" step="0.01" value="' + (r.price || '') + '" oninput="updateSaleRow(this)"></td>' +
+            '<td><span class="sale_total_display">' + (r.total || '0') + '</span></td>' +
+            '<td>' +
+              '<input type="file" accept="image/*" class="sale_img_input" onchange="previewImage(this)">' +
+              '<img class="img-preview" style="display:none;">' +
+              '<input type="text" class="sale_notes" placeholder="Notes" value="' + (r.notes || '') + '">' +
+            '</td>' +
+            '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcSales();">🗑</button></td>';
+          body.appendChild(tr);
+        });
+      }
+
+      const steerRaw = localStorage.getItem(storageKey('sales', year) + '_steers');
+      const heiferRaw = localStorage.getItem(storageKey('sales', year) + '_heifers');
+      let steerRows = [], heiferRows = [];
+      try { if (steerRaw) steerRows = JSON.parse(steerRaw); } catch {}
+      try { if (heiferRaw) heiferRows = JSON.parse(heiferRaw); } catch {}
+      if (!steerRows.length) addSteerSaleRow(); else fill('steer_sales_body', steerRows);
+      if (!heiferRows.length) addHeiferSaleRow(); else fill('heifer_sales_body', heiferRows);
+      recalcSales();
+    }
+
+    function saveCurrentTabYear(tabId) {
+      const year = currentYearByTab[tabId];
+      saveSimpleFields(tabId, year);
+      if (tabId === 'allotments') saveAllotments(year);
+      if (tabId === 'blm') savePermits(year);
+      if (tabId === 'calving') {
+        saveBrandings(year);
+        saveVaccinations(year);
+      }
+      if (tabId === 'bulls') saveBullsBought(year);
+      if (tabId === 'sales') saveSales(year);
+    }
+
+    function loadTabYear(tabId, year) {
+      loadSimpleFields(tabId, year);
+      if (tabId === 'allotments') loadAllotments(year);
+      if (tabId === 'blm') loadPermits(year);
+      if (tabId === 'calving') {
+        loadBrandings(year);
+        loadVaccinations(year);
+      }
+      if (tabId === 'bulls') loadBullsBought(year);
+      if (tabId === 'sales') loadSales(year);
+    }
+
     // Tab behavior
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -556,7 +942,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       });
     });
 
-    // Print / export single tab (browser's "Save as PDF")
+    // Print / export single tab
     function printTab(tabId) {
       const tabContent = document.getElementById(tabId);
       if (!tabContent) return;
@@ -584,9 +970,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
           img.className = 'img-preview';
           img.style.display = 'block';
           const reader = new FileReader();
-          reader.onload = e => {
-            img.src = e.target.result;
-          };
+          reader.onload = e => { img.src = e.target.result; };
           reader.readAsDataURL(file);
           item.appendChild(img);
           const label = document.createElement('div');
@@ -607,7 +991,9 @@ Here is the full current `index.html` including all notes/attachments areas, bul
     }
 
     function getDate(id) {
-      const v = document.getElementById(id).value;
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const v = el.value;
       return v ? new Date(v) : null;
     }
 
@@ -625,7 +1011,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       return x.toLocaleString(undefined, {maximumFractionDigits: digits ?? 0});
     }
 
-    // Allotments
+    // Allotments row helper
     function addAllotmentRow(name, head) {
       const body = document.getElementById('allotment_body');
       const tr = document.createElement('tr');
@@ -635,15 +1021,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       body.appendChild(tr);
     }
 
-    function initAllotments() {
-      const body = document.getElementById('allotment_body');
-      body.innerHTML = '';
-      for (let i = 1; i <= 5; i++) {
-        addAllotmentRow('Allotment ' + i, '');
-      }
-    }
-
-    // Permits / leases
+    // Permits row helper
     function addPermitRow(name, aums) {
       const body = document.getElementById('permit_body');
       const tr = document.createElement('tr');
@@ -654,14 +1032,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       body.appendChild(tr);
     }
 
-    function initPermits() {
-      const body = document.getElementById('permit_body');
-      body.innerHTML = '';
-      addPermitRow('Main BLM', '');
-      addPermitRow('Private lease', '');
-    }
-
-    // Branding log
+    // Branding row helper
     function addBrandingRow(name, dateStr, calves, notes) {
       const body = document.getElementById('branding_body');
       const tr = document.createElement('tr');
@@ -674,14 +1045,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       body.appendChild(tr);
     }
 
-    function initBranding() {
-      const body = document.getElementById('branding_body');
-      body.innerHTML = '';
-      addBrandingRow('Home ranch', '', '', '');
-      addBrandingRow('BLM allotment', '', '', '');
-    }
-
-    // Vaccinations
+    // Vaccination row helper
     function addVaccinationRow(dateStr, product, head, notes) {
       const body = document.getElementById('vaccination_body');
       const tr = document.createElement('tr');
@@ -694,13 +1058,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       body.appendChild(tr);
     }
 
-    function initVaccinations() {
-      const body = document.getElementById('vaccination_body');
-      body.innerHTML = '';
-      addVaccinationRow('', '', '', '');
-    }
-
-    // Bulls bought
+    // Bulls bought row helper
     function addBullBoughtRow(dateStr, numBulls, pricePerHead, location, notes) {
       const body = document.getElementById('bulls_bought_body');
       const tr = document.createElement('tr');
@@ -716,12 +1074,6 @@ Here is the full current `index.html` including all notes/attachments areas, bul
         '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
       body.appendChild(tr);
-    }
-
-    function initBullsBought() {
-      const body = document.getElementById('bulls_bought_body');
-      body.innerHTML = '';
-      addBullBoughtRow('', '', '', '', '');
     }
 
     function previewBullFiles(input) {
@@ -750,7 +1102,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       });
     }
 
-    // Sales rows with image upload
+    // Sales row helper
     function addSaleRow(bodyId) {
       const body = document.getElementById(bodyId);
       const tr = document.createElement('tr');
@@ -771,13 +1123,8 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       body.appendChild(tr);
     }
 
-    function addSteerSaleRow() {
-      addSaleRow('steer_sales_body');
-    }
-
-    function addHeiferSaleRow() {
-      addSaleRow('heifer_sales_body');
-    }
+    function addSteerSaleRow() { addSaleRow('steer_sales_body'); }
+    function addHeiferSaleRow() { addSaleRow('heifer_sales_body'); }
 
     function previewImage(input) {
       const file = input.files && input.files[0];
@@ -864,7 +1211,6 @@ Here is the full current `index.html` including all notes/attachments areas, bul
         bredCows + bredHeifers + replHeifersOpen + dryCows + cullCows + otherCows;
       const familyFemales = eliBred + eliDry + ameliaBred + ameliaDry + loganBred + loganDry;
 
-      const totalFemalesAll = baseFemales + familyFemales;
       const breedingFemales =
         bredCows + bredHeifers + replHeifersOpen +
         eliBred + ameliaBred + loganBred;
@@ -889,7 +1235,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
 
       const totalBulls = cowsTotal + heiferTotal;
 
-      // Calving (from Calving tab)
+      // Calving
       const calvBreeding = num('calv_breeding_input') || breedingFemales;
       const calvWeaningRate = (num('calv_weaning_rate_input') || (weaningRateBase * 100)) / 100.0;
       const calvSteerPct = (num('calv_steer_pct_input') || (steerPctBase * 100)) / 100.0;
@@ -901,7 +1247,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       const expectedHeifers = expectedWeaned * calvHeiferPct;
       const heifersAvailableAfter = expectedHeifers - calvReplKept;
 
-      // Winter feed (no tab, but still used for KPIs)
+      // Winter feed
       const feedingDays = daysBetween(feedStart, feedEnd);
       const cowsHead = bredCows + dryCows + cullCows + otherCows + eliDry + ameliaDry + loganDry;
       const heifersHead = bredHeifers + replHeifersOpen + eliBred + ameliaBred + loganBred;
@@ -935,7 +1281,7 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       });
       const aumsRemaining = permitted - aumsRequired;
 
-      // Bull scenarios table
+      // Bull scenarios
       const scenarioBody = document.getElementById('bulls_scenario_body');
       scenarioBody.innerHTML = '';
       const ratios = [8,9,10,11,12,13,14,15,16,17,18,19,20];
@@ -979,17 +1325,25 @@ Here is the full current `index.html` including all notes/attachments areas, bul
       document.getElementById('blm_aums_remaining').textContent = formatNumber(aumsRemaining, 0);
     }
 
-    // Init
-    initAllotments();
-    initPermits();
-    initBranding();
-    initVaccinations();
-    initBullsBought();
-    recalc();
+    // Initial load (year 2026)
+    window.addEventListener('load', () => {
+      loadTabYear('inputs', '2026');
+      loadTabYear('allotments', '2026');
+      loadTabYear('bulls', '2026');
+      loadTabYear('calving', '2026');
+      loadTabYear('sales', '2026');
+      loadTabYear('blm', '2026');
+      recalc();
+      recalcSales();
+    });
 
-    // Update bull days on input change
-    document.getElementById('bull_turnout_date').addEventListener('change', recalc);
-    document.getElementById('bull_bringin_date').addEventListener('change', recalc);
+    // Bull dates change
+    document.addEventListener('DOMContentLoaded', () => {
+      const turnout = document.getElementById('bull_turnout_date');
+      const bringin = document.getElementById('bull_bringin_date');
+      if (turnout) turnout.addEventListener('change', recalc);
+      if (bringin) bringin.addEventListener('change', recalc);
+    });
   </script>
 </body>
 </html>
