@@ -1,6 +1,3 @@
-Here is the complete updated `index.html` with all additions and changes, including print/“export PDF” buttons on every tab.
-
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,7 +78,6 @@ Here is the complete updated `index.html` with all additions and changes, includ
     <div class="tab" data-tab="bulls">Bulls</div>
     <div class="tab" data-tab="calving">Calving / Branding</div>
     <div class="tab" data-tab="sales">Sales Reports</div>
-    <div class="tab" data-tab="feed">Winter Feed</div>
     <div class="tab" data-tab="blm">BLM / AUM</div>
   </div>
 
@@ -187,6 +183,31 @@ Here is the complete updated `index.html` with all additions and changes, includ
       </label>
       <label>Replacement heifers kept (head)
         <input id="repl_heifers_kept" type="number" value="200">
+      </label>
+    </div>
+
+    <div class="section">
+      <h2>Winter feed settings</h2>
+      <label>Feed start date
+        <input id="feed_start" type="date" value="2026-11-01">
+      </label>
+      <label>Feed end date
+        <input id="feed_end" type="date" value="2027-03-15">
+      </label>
+      <label>Cows hay intake (lb/day)
+        <input id="cow_intake" type="number" value="30">
+      </label>
+      <label>Heifers hay intake (lb/day)
+        <input id="heifer_intake" type="number" value="26">
+      </label>
+      <label>Bulls hay intake (lb/day)
+        <input id="bull_intake" type="number" value="28">
+      </label>
+      <label>Hay waste/shrink (%)
+        <input id="hay_waste" type="number" step="0.01" value="10">
+      </label>
+      <label>Hay cost ($/ton)
+        <input id="hay_cost" type="number" step="0.01" value="180">
       </label>
     </div>
 
@@ -408,59 +429,6 @@ Here is the complete updated `index.html` with all additions and changes, includ
     </div>
   </div>
 
-  <!-- WINTER FEED -->
-  <div id="feed" class="tabcontent">
-    <div class="print-bar">
-      <button class="small-btn" onclick="printTab('feed')">Print</button>
-      <button class="small-btn" onclick="printTab('feed')">Export PDF</button>
-    </div>
-    <div class="section" style="margin-top:32px;">
-      <h2>Winter feed budget</h2>
-      <div class="kpi">Feeding days: <span id="feed_days">–</span></div>
-      <table>
-        <thead>
-          <tr>
-            <th>Class</th>
-            <th>Head</th>
-            <th>Lb/day</th>
-            <th>Tons (incl. waste)</th>
-            <th>Total cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Cows (all non-heifers)</td>
-            <td id="feed_cows_head">–</td>
-            <td id="feed_cows_lb">–</td>
-            <td id="feed_cows_tons">–</td>
-            <td id="feed_cows_cost">–</td>
-          </tr>
-          <tr>
-            <td>Heifers (bred + replacements)</td>
-            <td id="feed_heifers_head">–</td>
-            <td id="feed_heifers_lb">–</td>
-            <td id="feed_heifers_tons">–</td>
-            <td id="feed_heifers_cost">–</td>
-          </tr>
-          <tr>
-            <td>Bulls</td>
-            <td id="feed_bulls_head">–</td>
-            <td id="feed_bulls_lb">–</td>
-            <td id="feed_bulls_tons">–</td>
-            <td id="feed_bulls_cost">–</td>
-          </tr>
-          <tr>
-            <th>Total</th>
-            <th>–</th>
-            <th>–</th>
-            <th id="feed_total_tons">–</th>
-            <th id="feed_total_cost">–</th>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <!-- BLM -->
   <div id="blm" class="tabcontent">
     <div class="print-bar">
@@ -517,7 +485,7 @@ Here is the complete updated `index.html` with all additions and changes, includ
       });
     });
 
-    // Print / export single tab (use browser's "Save as PDF")
+    // Print / export single tab (browser's "Save as PDF")
     function printTab(tabId) {
       const tabContent = document.getElementById(tabId);
       if (!tabContent) return;
@@ -529,7 +497,7 @@ Here is the complete updated `index.html` with all additions and changes, includ
       printWindow.document.write('</body></html>');
       printWindow.document.close();
       printWindow.focus();
-      printWindow.print(); // user can choose "Save as PDF" here
+      printWindow.print();
     }
 
     function num(id) {
@@ -778,7 +746,7 @@ Here is the complete updated `index.html` with all additions and changes, includ
       const expectedHeifers = expectedWeaned * calvHeiferPct;
       const heifersAvailableAfter = expectedHeifers - calvReplKept;
 
-      // Winter feed
+      // Winter feed (no tab, but still used for KPIs)
       const feedingDays = daysBetween(feedStart, feedEnd);
       const cowsHead = bredCows + dryCows + cullCows + otherCows + eliDry + ameliaDry + loganDry;
       const heifersHead = bredHeifers + replHeifersOpen + eliBred + ameliaBred + loganBred;
@@ -848,26 +816,6 @@ Here is the complete updated `index.html` with all additions and changes, includ
       document.getElementById('calv_heifers').textContent = formatNumber(expectedHeifers, 0);
       document.getElementById('calv_heifers_available').textContent = formatNumber(heifersAvailableAfter, 0);
 
-      // Winter feed outputs
-      document.getElementById('feed_days').textContent = feedingDays;
-      document.getElementById('feed_cows_head').textContent = cowsHead;
-      document.getElementById('feed_cows_lb').textContent = cowIntake;
-      document.getElementById('feed_cows_tons').textContent = formatNumber(cowsTons, 0);
-      document.getElementById('feed_cows_cost').textContent = formatMoney(cowsCost);
-
-      document.getElementById('feed_heifers_head').textContent = heifersHead;
-      document.getElementById('feed_heifers_lb').textContent = heiferIntake;
-      document.getElementById('feed_heifers_tons').textContent = formatNumber(heifersTons, 0);
-      document.getElementById('feed_heifers_cost').textContent = formatMoney(heifersCost);
-
-      document.getElementById('feed_bulls_head').textContent = bullsHead;
-      document.getElementById('feed_bulls_lb').textContent = bullIntake;
-      document.getElementById('feed_bulls_tons').textContent = formatNumber(bullsTons, 0);
-      document.getElementById('feed_bulls_cost').textContent = formatMoney(bullsCost);
-
-      document.getElementById('feed_total_tons').textContent = formatNumber(totalTons, 0);
-      document.getElementById('feed_total_cost').textContent = formatMoney(totalCost);
-
       // BLM outputs
       document.getElementById('blm_days').textContent = grazingDays;
       document.getElementById('blm_months').textContent = grazingMonths.toFixed(1);
@@ -885,4 +833,3 @@ Here is the complete updated `index.html` with all additions and changes, includ
   </script>
 </body>
 </html>
-```
