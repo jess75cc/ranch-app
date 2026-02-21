@@ -1,3 +1,6 @@
+Here is the full current `index.html` including all notes/attachments areas, bull purchases, and bull turnout/bring‑in dates:
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +11,7 @@
     body { font-family: Arial, sans-serif; margin: 8px; }
     h1 { font-size: 20px; margin-bottom: 4px; }
     h2 { font-size: 16px; margin: 8px 0 4px; }
+    h3 { font-size: 14px; margin: 8px 0 4px; }
     .tabs { display: flex; margin-bottom: 8px; flex-wrap: wrap; }
     .tab {
       flex: 1;
@@ -29,12 +33,16 @@
       background: #fafafa;
     }
     label { display: block; font-size: 13px; margin-top: 4px; }
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 5px;
       box-sizing: border-box;
       font-size: 13px;
       margin-top: 2px;
+    }
+    textarea.notes_box {
+      resize: vertical;
+      font-family: Arial, sans-serif;
     }
     .kpi { font-size: 14px; margin: 2px 0; }
     .kpi span { font-weight: bold; }
@@ -64,6 +72,13 @@
       max-height: 80px;
       display: block;
       margin-top: 4px;
+    }
+    .notes_preview {
+      margin-top: 6px;
+    }
+    .notes_preview > div {
+      margin-bottom: 4px;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -124,6 +139,11 @@
       <label>Other (enter)
         <input id="other_cows" type="number" value="0">
       </label>
+
+      <h3 style="margin-top:10px;">Notes & attachments</h3>
+      <textarea class="notes_box" rows="3" placeholder="Notes about herd counts..."></textarea>
+      <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
     </div>
 
     <!-- Eli / Amelia / Logan -->
@@ -162,6 +182,11 @@
       <label>Logan sold
         <input id="logan_sold" type="number" value="0">
       </label>
+
+      <h3 style="margin-top:10px;">Notes & attachments</h3>
+      <textarea class="notes_box" rows="3" placeholder="Notes about Eli / Amelia / Logan cows..."></textarea>
+      <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
     </div>
 
     <div class="section">
@@ -184,6 +209,11 @@
       <label>Replacement heifers kept (head)
         <input id="repl_heifers_kept" type="number" value="200">
       </label>
+
+      <h3 style="margin-top:10px;">Notes & attachments</h3>
+      <textarea class="notes_box" rows="3" placeholder="Notes about breeding & production..."></textarea>
+      <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
     </div>
 
     <div class="section">
@@ -249,7 +279,19 @@
       <button class="small-btn" onclick="printTab('bulls')">Print</button>
       <button class="small-btn" onclick="printTab('bulls')">Export PDF</button>
     </div>
+
     <div class="section" style="margin-top:32px;">
+      <h2>Bull turnout schedule</h2>
+      <label>Bull turnout date
+        <input id="bull_turnout_date" type="date" value="">
+      </label>
+      <label>Bull bring-in date
+        <input id="bull_bringin_date" type="date" value="">
+      </label>
+      <div class="kpi">Days with bulls: <span id="bull_days_out">–</span></div>
+    </div>
+
+    <div class="section">
       <h2>Cow herd bulls</h2>
 
       <label>Cow breeding females
@@ -283,6 +325,25 @@
       <div class="kpi">Heifer required bulls: <span id="bulls_heifer_required">–</span></div>
       <div class="kpi">Heifer backup bulls: <span id="bulls_heifer_backup">–</span></div>
       <div class="kpi">Heifer total bulls: <span id="bulls_heifer_total">–</span></div>
+    </div>
+
+    <div class="section">
+      <h2>Bulls bought</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Number of bulls</th>
+            <th>Price per head</th>
+            <th>Location purchased</th>
+            <th>Notes / Attachments</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bulls_bought_body">
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addBullBoughtRow()">+ Add bull purchase</button>
     </div>
 
     <div class="section">
@@ -350,6 +411,11 @@
         </tbody>
       </table>
       <button class="small-btn" onclick="addBrandingRow()">+ Add branding</button>
+
+      <h3 style="margin-top:10px;">Notes & attachments (branding)</h3>
+      <textarea class="notes_box" rows="3" placeholder="General notes about branding..."></textarea>
+      <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
     </div>
 
     <div class="section">
@@ -368,6 +434,11 @@
         </tbody>
       </table>
       <button class="small-btn" onclick="addVaccinationRow()">+ Add vaccination</button>
+
+      <h3 style="margin-top:10px;">Notes & attachments (vaccinations)</h3>
+      <textarea class="notes_box" rows="3" placeholder="General notes about vaccinations..."></textarea>
+      <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <div class="notes_preview"></div>
     </div>
   </div>
 
@@ -500,6 +571,34 @@
       printWindow.print();
     }
 
+    // Preview notes files helper
+    function previewNotesFiles(input) {
+      const preview = input.parentElement.querySelector('.notes_preview');
+      if (!preview) return;
+      preview.innerHTML = '';
+      const files = input.files || [];
+      Array.from(files).forEach(file => {
+        const item = document.createElement('div');
+        if (file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.className = 'img-preview';
+          img.style.display = 'block';
+          const reader = new FileReader();
+          reader.onload = e => {
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+          item.appendChild(img);
+          const label = document.createElement('div');
+          label.textContent = file.name;
+          item.appendChild(label);
+        } else {
+          item.textContent = '📄 ' + file.name;
+        }
+        preview.appendChild(item);
+      });
+    }
+
     function num(id) {
       const el = document.getElementById(id);
       if (!el) return 0;
@@ -599,6 +698,56 @@
       const body = document.getElementById('vaccination_body');
       body.innerHTML = '';
       addVaccinationRow('', '', '', '');
+    }
+
+    // Bulls bought
+    function addBullBoughtRow(dateStr, numBulls, pricePerHead, location, notes) {
+      const body = document.getElementById('bulls_bought_body');
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="bull_date" value="' + (dateStr || '') + '"></td>' +
+        '<td><input type="number" class="bull_num" value="' + (numBulls || '') + '"></td>' +
+        '<td><input type="number" class="bull_price" step="0.01" value="' + (pricePerHead || '') + '"></td>' +
+        '<td><input type="text" class="bull_location" value="' + (location || '') + '"></td>' +
+        '<td>' +
+          '<input type="file" accept="image/*,.pdf,.doc,.docx" multiple class="bull_files" onchange="previewBullFiles(this)">' +
+          '<div class="notes_preview" style="margin-top:4px;"></div>' +
+          '<input type="text" class="bull_notes" placeholder="Notes" value="' + (notes || '') + '">' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function initBullsBought() {
+      const body = document.getElementById('bulls_bought_body');
+      body.innerHTML = '';
+      addBullBoughtRow('', '', '', '', '');
+    }
+
+    function previewBullFiles(input) {
+      const preview = input.parentElement.querySelector('.notes_preview');
+      if (!preview) return;
+      preview.innerHTML = '';
+      const files = input.files || [];
+      Array.from(files).forEach(file => {
+        const item = document.createElement('div');
+        if (file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.className = 'img-preview';
+          const reader = new FileReader();
+          reader.onload = e => { img.src = e.target.result; };
+          reader.readAsDataURL(file);
+          item.appendChild(img);
+          const lbl = document.createElement('div');
+          lbl.textContent = file.name;
+          lbl.style.fontSize = '11px';
+          item.appendChild(lbl);
+        } else {
+          item.textContent = '📄 ' + file.name;
+          item.style.fontSize = '11px';
+        }
+        preview.appendChild(item);
+      });
     }
 
     // Sales rows with image upload
@@ -704,6 +853,12 @@
       const blmTurnout = getDate('blm_turnout');
       const blmPulloff = getDate('blm_pulloff');
       const aumPerCow = num('aum_per_cow');
+
+      // Bull turnout dates
+      const bullTurnout = getDate('bull_turnout_date');
+      const bullBringin = getDate('bull_bringin_date');
+      const bullDays = daysBetween(bullTurnout, bullBringin);
+      document.getElementById('bull_days_out').textContent = bullDays > 0 ? bullDays : '–';
 
       const baseFemales =
         bredCows + bredHeifers + replHeifersOpen + dryCows + cullCows + otherCows;
@@ -829,7 +984,13 @@
     initPermits();
     initBranding();
     initVaccinations();
+    initBullsBought();
     recalc();
+
+    // Update bull days on input change
+    document.getElementById('bull_turnout_date').addEventListener('change', recalc);
+    document.getElementById('bull_bringin_date').addEventListener('change', recalc);
   </script>
 </body>
 </html>
+```
