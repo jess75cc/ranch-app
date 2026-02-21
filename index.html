@@ -1,3 +1,6 @@
+Here is the complete updated `index.html` with all additions and changes, including print/“export PDF” buttons on every tab.
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,9 +19,10 @@
       background: #f5f5f5;
       text-align: center;
       font-size: 13px;
+      cursor: pointer;
     }
     .tab.active { background: #ddd; }
-    .tabcontent { display: none; }
+    .tabcontent { display: none; position: relative; }
     .tabcontent.active { display: block; }
     .section {
       margin-bottom: 10px;
@@ -37,20 +41,32 @@
     }
     .kpi { font-size: 14px; margin: 2px 0; }
     .kpi span { font-weight: bold; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th, td { border: 1px solid #ccc; padding: 4px; text-align: right; }
-    th:first-child, td:first-child { text-align: left; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    th, td { border: 1px solid #ccc; padding: 4px; text-align: left; }
+    th { background: #eee; }
     button {
-      width: 100%;
-      padding: 10px;
+      padding: 8px 10px;
       margin-top: 8px;
-      font-size: 15px;
+      font-size: 13px;
+      cursor: pointer;
     }
     .small-btn {
       width: auto;
       padding: 6px 10px;
       margin-top: 6px;
       font-size: 12px;
+      cursor: pointer;
+    }
+    .print-bar {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+    .img-preview {
+      max-width: 80px;
+      max-height: 80px;
+      display: block;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -63,14 +79,19 @@
     <div class="tab" data-tab="inputs">Inputs</div>
     <div class="tab" data-tab="allotments">Allotments</div>
     <div class="tab" data-tab="bulls">Bulls</div>
-    <div class="tab" data-tab="calving">Calving</div>
+    <div class="tab" data-tab="calving">Calving / Branding</div>
+    <div class="tab" data-tab="sales">Sales Reports</div>
     <div class="tab" data-tab="feed">Winter Feed</div>
     <div class="tab" data-tab="blm">BLM / AUM</div>
   </div>
 
   <!-- HOME / DASHBOARD -->
   <div id="home" class="tabcontent active">
-    <div class="section">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('home')">Print</button>
+      <button class="small-btn" onclick="printTab('home')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
       <h2>Quick Stats</h2>
       <div class="kpi">Breeding females: <span id="kpi_breeding_females">–</span></div>
       <div class="kpi">Total bulls to run: <span id="kpi_total_bulls">–</span></div>
@@ -83,7 +104,11 @@
 
   <!-- INPUTS -->
   <div id="inputs" class="tabcontent">
-    <div class="section">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('inputs')">Print</button>
+      <button class="small-btn" onclick="printTab('inputs')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
       <h2>Herd counts (head)</h2>
       <label>Bred cows
         <input id="bred_cows" type="number" value="1000">
@@ -202,7 +227,11 @@
 
   <!-- ALLOTMENTS -->
   <div id="allotments" class="tabcontent">
-    <div class="section">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('allotments')">Print</button>
+      <button class="small-btn" onclick="printTab('allotments')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
       <h2>Turnout by allotment</h2>
       <table>
         <thead>
@@ -212,7 +241,6 @@
           </tr>
         </thead>
         <tbody id="allotment_body">
-          <!-- rows are added by JS -->
         </tbody>
       </table>
       <button class="small-btn" onclick="addAllotmentRow()">+ Add allotment</button>
@@ -221,7 +249,11 @@
 
   <!-- BULLS -->
   <div id="bulls" class="tabcontent">
-    <div class="section">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('bulls')">Print</button>
+      <button class="small-btn" onclick="printTab('bulls')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
       <h2>Cow herd bulls</h2>
 
       <label>Cow breeding females
@@ -276,21 +308,138 @@
     </div>
   </div>
 
-  <!-- CALVING -->
+  <!-- CALVING / BRANDING -->
   <div id="calving" class="tabcontent">
-    <div class="section">
-      <h2>Calving & replacements</h2>
-      <div class="kpi">Breeding females: <span id="calv_breeding_females">–</span></div>
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('calving')">Print</button>
+      <button class="small-btn" onclick="printTab('calving')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
+      <h2>Calving assumptions</h2>
+      <label>Breeding females
+        <input id="calv_breeding_input" type="number" value="1200">
+      </label>
+      <label>Weaning / calf crop rate (%)
+        <input id="calv_weaning_rate_input" type="number" step="0.01" value="92">
+      </label>
+      <label>Steer % of calf crop
+        <input id="calv_steer_pct_input" type="number" step="0.01" value="50">
+      </label>
+      <label>Heifer % of calf crop
+        <input id="calv_heifer_pct_input" type="number" step="0.01" value="50">
+      </label>
+      <label>Replacement heifers kept (head)
+        <input id="calv_repl_kept_input" type="number" value="200">
+      </label>
+
       <div class="kpi">Weaned calves: <span id="calv_weaned">–</span></div>
       <div class="kpi">Steers: <span id="calv_steers">–</span></div>
       <div class="kpi">Heifers: <span id="calv_heifers">–</span></div>
       <div class="kpi">Heifers after keeping replacements: <span id="calv_heifers_available">–</span></div>
     </div>
+
+    <div class="section">
+      <h2>Branding log</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Branding name / pasture</th>
+            <th>Date</th>
+            <th>Calves branded</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="branding_body">
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addBrandingRow()">+ Add branding</button>
+    </div>
+
+    <div class="section">
+      <h2>Vaccinations given</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Vaccine / product</th>
+            <th>Head vaccinated</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="vaccination_body">
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addVaccinationRow()">+ Add vaccination</button>
+    </div>
+  </div>
+
+  <!-- SALES REPORTS -->
+  <div id="sales" class="tabcontent">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('sales')">Print</button>
+      <button class="small-btn" onclick="printTab('sales')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
+      <h2>Steer sales</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Lot / Tag</th>
+            <th>Type</th>
+            <th>Head</th>
+            <th>Avg weight (lbs)</th>
+            <th>Price ($/lb)</th>
+            <th>Total $</th>
+            <th>Picture / Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="steer_sales_body">
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addSteerSaleRow()">+ Add steer sale</button>
+    </div>
+
+    <div class="section">
+      <h2>Heifer sales</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Lot / Tag</th>
+            <th>Type</th>
+            <th>Head</th>
+            <th>Avg weight (lbs)</th>
+            <th>Price ($/lb)</th>
+            <th>Total $</th>
+            <th>Picture / Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="heifer_sales_body">
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addHeiferSaleRow()">+ Add heifer sale</button>
+    </div>
+
+    <div class="section">
+      <h2>Sales summary</h2>
+      <div class="kpi">Total steer sales: <span id="total_steer_sales">–</span></div>
+      <div class="kpi">Total heifer sales: <span id="total_heifer_sales">–</span></div>
+      <div class="kpi">Combined sales: <span id="combined_sales">–</span></div>
+    </div>
   </div>
 
   <!-- WINTER FEED -->
   <div id="feed" class="tabcontent">
-    <div class="section">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('feed')">Print</button>
+      <button class="small-btn" onclick="printTab('feed')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
       <h2>Winter feed budget</h2>
       <div class="kpi">Feeding days: <span id="feed_days">–</span></div>
       <table>
@@ -339,7 +488,11 @@
 
   <!-- BLM -->
   <div id="blm" class="tabcontent">
-    <div class="section">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('blm')">Print</button>
+      <button class="small-btn" onclick="printTab('blm')">Export PDF</button>
+    </div>
+    <div class="section" style="margin-top:32px;">
       <h2>BLM grazing / AUM planner</h2>
 
       <label>Turnout date
@@ -364,7 +517,6 @@
           </tr>
         </thead>
         <tbody id="permit_body">
-          <!-- rows added by JS -->
         </tbody>
       </table>
       <button class="small-btn" onclick="addPermitRow()">+ Add permit / lease</button>
@@ -389,6 +541,21 @@
         document.getElementById(id).classList.add('active');
       });
     });
+
+    // Print / export single tab (use browser's "Save as PDF")
+    function printTab(tabId) {
+      const tabContent = document.getElementById(tabId);
+      if (!tabContent) return;
+      const printWindow = window.open('', '', 'width=900,height=700');
+      printWindow.document.write('<html><head><title>Print - ' + tabId + '</title>');
+      printWindow.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}table{width:100%;border-collapse:collapse;font-size:12px;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button{display:none;}.print-bar{display:none;}</style>');
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(tabContent.innerHTML);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print(); // user can choose "Save as PDF" here
+    }
 
     function num(id) {
       const el = document.getElementById(id);
@@ -452,6 +619,115 @@
       addPermitRow('Private lease', '');
     }
 
+    // Branding log
+    function addBrandingRow(name, dateStr, calves, notes) {
+      const body = document.getElementById('branding_body');
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="text" class="brand_name" value="' + (name || '') + '"></td>' +
+        '<td><input type="date" class="brand_date" value="' + (dateStr || '') + '"></td>' +
+        '<td><input type="number" class="brand_calves" value="' + (calves || '') + '"></td>' +
+        '<td><input type="text" class="brand_notes" value="' + (notes || '') + '"></td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function initBranding() {
+      const body = document.getElementById('branding_body');
+      body.innerHTML = '';
+      addBrandingRow('Home ranch', '', '', '');
+      addBrandingRow('BLM allotment', '', '', '');
+    }
+
+    // Vaccinations
+    function addVaccinationRow(dateStr, product, head, notes) {
+      const body = document.getElementById('vaccination_body');
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="vacc_date" value="' + (dateStr || '') + '"></td>' +
+        '<td><input type="text" class="vacc_product" value="' + (product || '') + '"></td>' +
+        '<td><input type="number" class="vacc_head" value="' + (head || '') + '"></td>' +
+        '<td><input type="text" class="vacc_notes" value="' + (notes || '') + '"></td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function initVaccinations() {
+      const body = document.getElementById('vaccination_body');
+      body.innerHTML = '';
+      addVaccinationRow('', '', '', '');
+    }
+
+    // Sales rows with image upload
+    function addSaleRow(bodyId) {
+      const body = document.getElementById(bodyId);
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="sale_date"></td>' +
+        '<td><input type="text" class="sale_lot"></td>' +
+        '<td><input type="text" class="sale_type"></td>' +
+        '<td><input type="number" class="sale_head" oninput="updateSaleRow(this)"></td>' +
+        '<td><input type="number" class="sale_wt" oninput="updateSaleRow(this)"></td>' +
+        '<td><input type="number" class="sale_price" step="0.01" oninput="updateSaleRow(this)"></td>' +
+        '<td><span class="sale_total_display">0</span></td>' +
+        '<td>' +
+          '<input type="file" accept="image/*" class="sale_img_input" onchange="previewImage(this)">' +
+          '<img class="img-preview" style="display:none;">' +
+          '<input type="text" class="sale_notes" placeholder="Notes">' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcSales();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function addSteerSaleRow() {
+      addSaleRow('steer_sales_body');
+    }
+
+    function addHeiferSaleRow() {
+      addSaleRow('heifer_sales_body');
+    }
+
+    function previewImage(input) {
+      const file = input.files && input.files[0];
+      const img = input.parentElement.querySelector('.img-preview');
+      if (!file) {
+        if (img) img.style.display = 'none';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        img.src = e.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateSaleRow(el) {
+      const tr = el.closest('tr');
+      const head = Number(tr.querySelector('.sale_head').value || 0);
+      const wt = Number(tr.querySelector('.sale_wt').value || 0);
+      const price = Number(tr.querySelector('.sale_price').value || 0);
+      const total = head * wt * price;
+      tr.querySelector('.sale_total_display').textContent = formatMoney(total);
+      recalcSales();
+    }
+
+    function recalcSales() {
+      function sumTotals(bodyId) {
+        let sum = 0;
+        document.querySelectorAll('#' + bodyId + ' .sale_total_display').forEach(span => {
+          const txt = span.textContent.replace('$','').replace(/,/g,'');
+          sum += Number(txt || 0);
+        });
+        return sum;
+      }
+      const steerTotal = sumTotals('steer_sales_body');
+      const heiferTotal = sumTotals('heifer_sales_body');
+      document.getElementById('total_steer_sales').textContent = formatMoney(steerTotal);
+      document.getElementById('total_heifer_sales').textContent = formatMoney(heiferTotal);
+      document.getElementById('combined_sales').textContent = formatMoney(steerTotal + heiferTotal);
+    }
+
     function recalc() {
       const bredCows = num('bred_cows');
       const bredHeifers = num('bred_heifers');
@@ -469,10 +745,10 @@
 
       const bullRatioBase = num('bull_ratio');
       const backupPctBase = num('backup_bulls_pct') / 100.0;
-      const weaningRate = num('weaning_rate') / 100.0;
-      const steerPct = num('steer_pct') / 100.0;
-      const heiferPct = num('heifer_pct') / 100.0;
-      const replHeifersKept = num('repl_heifers_kept');
+      const weaningRateBase = num('weaning_rate') / 100.0;
+      const steerPctBase = num('steer_pct') / 100.0;
+      const heiferPctBase = num('heifer_pct') / 100.0;
+      const replHeifersKeptBase = num('repl_heifers_kept');
 
       const feedStart = getDate('feed_start');
       const feedEnd = getDate('feed_end');
@@ -495,7 +771,7 @@
         bredCows + bredHeifers + replHeifersOpen +
         eliBred + ameliaBred + loganBred;
 
-      // Cow herd bulls (editable)
+      // Cow herd bulls
       const cowsBreeding = num('bulls_cow_breeding') || breedingFemales;
       const cowsRatio = num('bulls_cow_ratio') || bullRatioBase;
       const cowsBackupPct = num('bulls_cow_backup_pct') / 100.0;
@@ -504,7 +780,7 @@
       const cowsBackup = Math.ceil(cowsRequired * cowsBackupPct);
       const cowsTotal = cowsRequired + cowsBackup;
 
-      // Heifer bulls (editable)
+      // Heifer bulls
       const heiferBreeding = num('bulls_heifer_breeding');
       const heiferRatio = num('bulls_heifer_ratio') || cowsRatio;
       const heiferBackupPct = num('bulls_heifer_backup_pct') / 100.0;
@@ -515,11 +791,17 @@
 
       const totalBulls = cowsTotal + heiferTotal;
 
-      // Calving
-      const expectedWeaned = breedingFemales * weaningRate;
-      const expectedSteers = expectedWeaned * steerPct;
-      const expectedHeifers = expectedWeaned * heiferPct;
-      const heifersAvailableAfter = expectedHeifers - replHeifersKept;
+      // Calving (from Calving tab)
+      const calvBreeding = num('calv_breeding_input') || breedingFemales;
+      const calvWeaningRate = (num('calv_weaning_rate_input') || (weaningRateBase * 100)) / 100.0;
+      const calvSteerPct = (num('calv_steer_pct_input') || (steerPctBase * 100)) / 100.0;
+      const calvHeiferPct = (num('calv_heifer_pct_input') || (heiferPctBase * 100)) / 100.0;
+      const calvReplKept = num('calv_repl_kept_input') || replHeifersKeptBase;
+
+      const expectedWeaned = calvBreeding * calvWeaningRate;
+      const expectedSteers = expectedWeaned * calvSteerPct;
+      const expectedHeifers = expectedWeaned * calvHeiferPct;
+      const heifersAvailableAfter = expectedHeifers - calvReplKept;
 
       // Winter feed
       const feedingDays = daysBetween(feedStart, feedEnd);
@@ -546,35 +828,16 @@
       // BLM & AUM
       const grazingDays = daysBetween(blmTurnout, blmPulloff);
       const grazingMonths = grazingDays / 30.4;
-      const aumsRequired = breedingFemales * aumPerCow * grazingMonths;
+      const aumsRequired = breedingFemales * grazingMonths * aumPerCow;
 
-      let permittedTotal = 0;
-      document.querySelectorAll('.permit_aums').forEach(input => {
-        const v = input.value === '' ? 0 : Number(input.value);
-        permittedTotal += v;
+      // Permitted AUMs sum
+      let permitted = 0;
+      document.querySelectorAll('.permit_aums').forEach(inp => {
+        permitted += Number(inp.value || 0);
       });
-      const aumsRemaining = permittedTotal - aumsRequired;
+      const aumsRemaining = permitted - aumsRequired;
 
-      // Dashboard KPIs
-      document.getElementById('kpi_breeding_females').textContent = breedingFemales;
-      document.getElementById('kpi_total_bulls').textContent = totalBulls;
-      document.getElementById('kpi_weaned_calves').textContent = formatNumber(expectedWeaned, 0);
-      document.getElementById('kpi_winter_hay_tons').textContent = formatNumber(totalTons, 0);
-      document.getElementById('kpi_winter_feed_cost').textContent = formatMoney(Math.round(totalCost));
-      document.getElementById('kpi_aums_required').textContent = formatNumber(aumsRequired, 0);
-
-      // Bulls tab outputs
-      document.getElementById('bulls_cow_breeding').value = cowsBreeding;
-      document.getElementById('bulls_cow_required').textContent = cowsRequired;
-      document.getElementById('bulls_cow_backup').textContent = cowsBackup;
-      document.getElementById('bulls_cow_total').textContent = cowsTotal;
-
-      document.getElementById('bulls_heifer_required').textContent = heiferRequired;
-      document.getElementById('bulls_heifer_backup').textContent = heiferBackup;
-      document.getElementById('bulls_heifer_total').textContent = heiferTotal;
-
-      document.getElementById('bulls_total').textContent = totalBulls;
-
+      // Bull scenarios table
       const scenarioBody = document.getElementById('bulls_scenario_body');
       scenarioBody.innerHTML = '';
       const ratios = [8,9,10,11,12,13,14,15,16,17,18,19,20];
@@ -585,45 +848,66 @@
         scenarioBody.appendChild(tr);
       });
 
-      // Calving
-      document.getElementById('calv_breeding_females').textContent = breedingFemales;
+      // Home KPIs
+      document.getElementById('kpi_breeding_females').textContent = breedingFemales;
+      document.getElementById('kpi_total_bulls').textContent = totalBulls;
+      document.getElementById('kpi_weaned_calves').textContent = formatNumber(expectedWeaned, 0);
+      document.getElementById('kpi_winter_hay_tons').textContent = formatNumber(totalTons, 0);
+      document.getElementById('kpi_winter_feed_cost').textContent = formatMoney(totalCost);
+      document.getElementById('kpi_aums_required').textContent = formatNumber(aumsRequired, 0);
+
+      // Bulls tab outputs
+      document.getElementById('bulls_cow_required').textContent = cowsRequired;
+      document.getElementById('bulls_cow_backup').textContent = cowsBackup;
+      document.getElementById('bulls_cow_total').textContent = cowsTotal;
+
+      document.getElementById('bulls_heifer_required').textContent = heiferRequired;
+      document.getElementById('bulls_heifer_backup').textContent = heiferBackup;
+      document.getElementById('bulls_heifer_total').textContent = heiferTotal;
+
+      document.getElementById('bulls_total').textContent = totalBulls;
+
+      // Calving outputs
       document.getElementById('calv_weaned').textContent = formatNumber(expectedWeaned, 0);
       document.getElementById('calv_steers').textContent = formatNumber(expectedSteers, 0);
       document.getElementById('calv_heifers').textContent = formatNumber(expectedHeifers, 0);
       document.getElementById('calv_heifers_available').textContent = formatNumber(heifersAvailableAfter, 0);
 
-      // Winter feed
+      // Winter feed outputs
       document.getElementById('feed_days').textContent = feedingDays;
       document.getElementById('feed_cows_head').textContent = cowsHead;
       document.getElementById('feed_cows_lb').textContent = cowIntake;
       document.getElementById('feed_cows_tons').textContent = formatNumber(cowsTons, 0);
-      document.getElementById('feed_cows_cost').textContent = formatMoney(Math.round(cowsCost));
+      document.getElementById('feed_cows_cost').textContent = formatMoney(cowsCost);
 
       document.getElementById('feed_heifers_head').textContent = heifersHead;
       document.getElementById('feed_heifers_lb').textContent = heiferIntake;
       document.getElementById('feed_heifers_tons').textContent = formatNumber(heifersTons, 0);
-      document.getElementById('feed_heifers_cost').textContent = formatMoney(Math.round(heifersCost));
+      document.getElementById('feed_heifers_cost').textContent = formatMoney(heifersCost);
 
       document.getElementById('feed_bulls_head').textContent = bullsHead;
       document.getElementById('feed_bulls_lb').textContent = bullIntake;
       document.getElementById('feed_bulls_tons').textContent = formatNumber(bullsTons, 0);
-      document.getElementById('feed_bulls_cost').textContent = formatMoney(Math.round(bullsCost));
+      document.getElementById('feed_bulls_cost').textContent = formatMoney(bullsCost);
 
       document.getElementById('feed_total_tons').textContent = formatNumber(totalTons, 0);
-      document.getElementById('feed_total_cost').textContent = formatMoney(Math.round(totalCost));
+      document.getElementById('feed_total_cost').textContent = formatMoney(totalCost);
 
-      // BLM summary
+      // BLM outputs
       document.getElementById('blm_days').textContent = grazingDays;
-      document.getElementById('blm_months').textContent = grazingMonths.toFixed(2);
-      document.getElementById('blm_total_permitted').textContent = formatNumber(permittedTotal, 0);
+      document.getElementById('blm_months').textContent = grazingMonths.toFixed(1);
+      document.getElementById('blm_total_permitted').textContent = formatNumber(permitted, 0);
       document.getElementById('blm_aums_required').textContent = formatNumber(aumsRequired, 0);
       document.getElementById('blm_aums_remaining').textContent = formatNumber(aumsRemaining, 0);
     }
 
-    // initialize tables and calculate once
+    // Init
     initAllotments();
     initPermits();
+    initBranding();
+    initVaccinations();
     recalc();
   </script>
 </body>
 </html>
+```
