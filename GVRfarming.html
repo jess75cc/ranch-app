@@ -97,15 +97,9 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    .home-actions button.secondary {
-      background: #2196F3;
-    }
-    .home-actions button.tertiary {
-      background: #ff9800;
-    }
-    .home-actions button:hover {
-      opacity: 0.9;
-    }
+    .home-actions button.secondary { background: #2196F3; }
+    .home-actions button.tertiary { background: #ff9800; }
+    .home-actions button:hover { opacity: 0.9; }
     .summary-box {
       background: #e8f5e9;
       padding: 15px;
@@ -121,7 +115,7 @@
 </head>
 <body>
   <h1>Grass Valley Ranch – Farming</h1>
-  <div>Crop yields, inputs, hay sales, and organic tilth logbook</div>
+  <div>Crop yields, inputs, hay sales, load records, and organic tilth logbook</div>
 
   <!-- Shared crop year selector -->
   <div class="section" style="margin-top:8px;">
@@ -134,6 +128,7 @@
     <div class="tab" data-tab="yields">Crop Yields</div>
     <div class="tab" data-tab="inputs">Inputs</div>
     <div class="tab" data-tab="hay_sales">Hay Sales</div>
+    <div class="tab" data-tab="load_records">Load Records</div>
     <div class="tab" data-tab="logbook">Organic Tilth Logbook</div>
   </div>
 
@@ -403,7 +398,7 @@
     </div>
   </div>
 
-  <!-- INPUTS -->
+  <!-- INPUTS WITH SUB‑CATEGORIES -->
   <div id="inputs" class="tabcontent">
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('inputs')">Print</button>
@@ -411,78 +406,166 @@
 
     <div class="section">
       <h2>Farm inputs</h2>
-      <table>
+
+      <!-- Fertilizer -->
+      <h3>Fertilizer</h3>
+      <table id="inputs_fertilizer_table">
         <thead>
           <tr>
-            <th>Category</th>
-            <th>Amount / units (use $)</th>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
             <th>Notes</th>
-            <th>Attachments</th>
+            <th>Attachment</th>
+            <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Fertilizer</td>
-            <td><input type="number" data-group="inputs" data-field="fertilizer" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="fertilizer" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Diesel</td>
-            <td><input type="number" data-group="inputs" data-field="diesel" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="diesel" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Twine</td>
-            <td><input type="number" data-group="inputs" data-field="twine" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="twine" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Seed</td>
-            <td><input type="number" data-group="inputs" data-field="seed" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="seed" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Equipment cost</td>
-            <td><input type="number" data-group="inputs" data-field="equipment_cost" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="equipment_cost" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Mechanic bills</td>
-            <td><input type="number" data-group="inputs" data-field="mechanic" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="mechanic" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Equipment purchases</td>
-            <td><input type="number" data-group="inputs" data-field="equipment_purchases" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="equipment_purchases" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Pivot cost</td>
-            <td><input type="number" data-group="inputs" data-field="pivot" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="pivot" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Tires</td>
-            <td><input type="number" data-group="inputs" data-field="tires" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="tires" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-          <tr>
-            <td>Sprinklers</td>
-            <td><input type="number" data-group="inputs" data-field="sprinklers" data-type="amount" oninput="saveAll()"></td>
-            <td><input type="text" data-group="inputs" data-field="sprinklers" data-type="notes" oninput="saveAll()"></td>
-            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
-          </tr>
-        </tbody>
+        <tbody></tbody>
       </table>
+      <button class="small-btn" onclick="addInputSubRow('fertilizer')">+ Add fertilizer line</button>
+
+      <!-- Diesel -->
+      <h3>Diesel</h3>
+      <table id="inputs_diesel_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('diesel')">+ Add diesel line</button>
+
+      <!-- Twine -->
+      <h3>Twine</h3>
+      <table id="inputs_twine_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('twine')">+ Add twine line</button>
+
+      <!-- Seed -->
+      <h3>Seed</h3>
+      <table id="inputs_seed_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('seed')">+ Add seed line</button>
+
+      <!-- Equipment cost -->
+      <h3>Equipment cost</h3>
+      <table id="inputs_equipment_cost_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('equipment_cost')">+ Add equipment cost line</button>
+
+      <!-- Mechanic bills -->
+      <h3>Mechanic bills</h3>
+      <table id="inputs_mechanic_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('mechanic')">+ Add mechanic bill line</button>
+
+      <!-- Equipment purchases -->
+      <h3>Equipment purchases</h3>
+      <table id="inputs_equipment_purchases_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('equipment_purchases')">+ Add equipment purchase line</button>
+
+      <!-- Pivot cost -->
+      <h3>Pivot cost</h3>
+      <table id="inputs_pivot_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('pivot')">+ Add pivot cost line</button>
+
+      <!-- Tires -->
+      <h3>Tires</h3>
+      <table id="inputs_tires_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('tires')">+ Add tires line</button>
+
+      <!-- Sprinklers -->
+      <h3>Sprinklers</h3>
+      <table id="inputs_sprinklers_table">
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Amount ($)</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="small-btn" onclick="addInputSubRow('sprinklers')">+ Add sprinklers line</button>
     </div>
 
     <div class="section">
@@ -530,6 +613,47 @@
     <div class="section">
       <h2>Notes & attachments – hay sales</h2>
       <textarea class="notes_box" rows="3" placeholder="General notes for hay sales..." oninput="saveAll()" data-group="hay_notes" data-field="general"></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();">
+      <div class="notes_preview"></div>
+    </div>
+  </div>
+
+  <!-- LOAD RECORDS -->
+  <div id="load_records" class="tabcontent">
+    <div class="print-bar">
+      <button class="small-btn" onclick="printTab('load_records')">Print</button>
+    </div>
+
+    <div class="section">
+      <h2>Load records</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Cutting</th>
+            <th>Field</th>
+            <th>Number of bales</th>
+            <th>Notes</th>
+            <th>Attachment</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="load_records_body">
+          <!-- rows added by JS -->
+        </tbody>
+      </table>
+      <button class="small-btn" onclick="addLoadRecordRow()">+ Add load record</button>
+    </div>
+
+    <div class="section">
+      <h2>Totals – load records</h2>
+      <div>Total number of loads: <strong><span id="load_records_count">0</span></strong></div>
+      <div>Total number of bales: <strong><span id="load_records_bales">0</span></strong></div>
+    </div>
+
+    <div class="section">
+      <h2>Notes & attachments – load records</h2>
+      <textarea class="notes_box" rows="3" placeholder="General notes for load records..." oninput="saveAll()" data-group="load_records_notes" data-field="general"></textarea>
       <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();">
       <div class="notes_preview"></div>
     </div>
@@ -596,7 +720,7 @@
       });
     })();
 
-    // Tabs
+    // Tabs[web:88][web:96]
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         const id = tab.dataset.tab;
@@ -633,6 +757,7 @@
       w.document.write(document.getElementById('yields').innerHTML);
       w.document.write(document.getElementById('inputs').innerHTML);
       w.document.write(document.getElementById('hay_sales').innerHTML);
+      w.document.write(document.getElementById('load_records').innerHTML);
       w.document.write(document.getElementById('logbook').innerHTML);
       w.document.write('</body></html>');
       w.document.close();
@@ -665,7 +790,7 @@
 
       let yPos = 40;
 
-      // Yields table content
+      // Yields
       doc.setFontSize(14);
       doc.text('Crop Yields', 14, yPos);
       yPos += 10;
@@ -764,6 +889,32 @@
       return '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 });
     }
 
+    // Add a sub‑category row for a given input category
+    function addInputSubRow(category, rowData) {
+      const tableId = `inputs_${category}_table`;
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      if (!tbody) return;
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="text" class="input_sub_name" ' +
+          'data-group="inputs_sub" data-category="' + category + '" data-type="name" ' +
+          'value="' + (r.name || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="number" class="input_sub_amount" ' +
+          'data-group="inputs_sub" data-category="' + category + '" data-type="amount" ' +
+          'value="' + (r.amount || '') + '" oninput="saveAll(); recalcFinancialTotals();"></td>' +
+        '<td><input type="text" class="input_sub_notes" ' +
+          'data-group="inputs_sub" data-category="' + category + '" data-type="notes" ' +
+          'value="' + (r.notes || '') + '" oninput="saveAll()"></td>' +
+        '<td>' +
+          '<input type="file" accept="image/*,.pdf,.doc,.docx" ' +
+            'onchange="previewNotesFiles(this); saveAll()">' +
+          '<div class="notes_preview"></div>' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll(); recalcFinancialTotals();">🗑</button></td>';
+      tbody.appendChild(tr);
+    }
+
     // HAY SALES ROWS
     function addHaySaleRow(rowData) {
       const body = document.getElementById('hay_sales_body');
@@ -826,6 +977,47 @@
       recalcFinancialTotals();
     }
 
+    // LOAD RECORDS ROWS
+    function addLoadRecordRow(rowData) {
+      const body = document.getElementById('load_records_body');
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="load_date" value="' + (r.date || '') + '" oninput="saveAll(); recalcLoadRecordsTotals();"></td>' +
+        '<td><input type="text" class="load_cutting" value="' + (r.cutting || '') + '" placeholder="e.g. 1st, 2nd" oninput="saveAll(); recalcLoadRecordsTotals();"></td>' +
+        '<td><input type="text" class="load_field" value="' + (r.field || '') + '" oninput="saveAll(); recalcLoadRecordsTotals();"></td>' +
+        '<td><input type="number" class="load_bales" value="' + (r.bales || '') + '" oninput="saveAll(); recalcLoadRecordsTotals();"></td>' +
+        '<td><input type="text" class="load_notes" value="' + (r.notes || '') + '" oninput="saveAll(); recalcLoadRecordsTotals();"></td>' +
+        '<td>' +
+          '<input type="file" accept="image/*,.pdf,.doc,.docx" onchange="previewNotesFiles(this); saveAll();">' +
+          '<div class="notes_preview"></div>' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll(); recalcLoadRecordsTotals();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function recalcLoadRecordsTotals() {
+      const rows = document.querySelectorAll('#load_records_body tr');
+      let loadCount = 0;
+      let totalBales = 0;
+
+      rows.forEach(tr => {
+        const hasData =
+          (tr.querySelector('.load_date')?.value ||
+           tr.querySelector('.load_cutting')?.value ||
+           tr.querySelector('.load_field')?.value ||
+           tr.querySelector('.load_bales')?.value);
+
+        if (hasData) {
+          loadCount += 1;
+          totalBales += Number(tr.querySelector('.load_bales')?.value || 0);
+        }
+      });
+
+      document.getElementById('load_records_count').textContent = loadCount;
+      document.getElementById('load_records_bales').textContent = totalBales;
+    }
+
     // LOGBOOK ROWS
     function addLogbookRow(rowData) {
       const body = document.getElementById('logbook_body');
@@ -846,7 +1038,7 @@
       body.appendChild(tr);
     }
 
-    // FINANCIAL TOTALS (income, expenses, pivot)
+    // FINANCIAL TOTALS[web:79][web:86]
     function recalcFinancialTotals() {
       // Income from hay
       let income = 0;
@@ -856,21 +1048,24 @@
         income += units * price;
       });
 
-      function getInputAmount(field) {
-        const el = document.querySelector(`[data-group="inputs"][data-field="${field}"][data-type="amount"]`);
-        return el ? Number(el.value || 0) : 0;
+      function sumCategory(category) {
+        let total = 0;
+        document.querySelectorAll(`.input_sub_amount[data-category="${category}"]`).forEach(input => {
+          total += Number(input.value || 0);
+        });
+        return total;
       }
 
-      const exp_fertilizer = getInputAmount('fertilizer');
-      const exp_diesel = getInputAmount('diesel');
-      const exp_twine = getInputAmount('twine');
-      const exp_seed = getInputAmount('seed');
-      const exp_equipment_cost = getInputAmount('equipment_cost');
-      const exp_mechanic = getInputAmount('mechanic');
-      const exp_equipment_purchases = getInputAmount('equipment_purchases');
-      const exp_pivot = getInputAmount('pivot');
-      const exp_tires = getInputAmount('tires');
-      const exp_sprinklers = getInputAmount('sprinklers');
+      const exp_fertilizer = sumCategory('fertilizer');
+      const exp_diesel = sumCategory('diesel');
+      const exp_twine = sumCategory('twine');
+      const exp_seed = sumCategory('seed');
+      const exp_equipment_cost = sumCategory('equipment_cost');
+      const exp_mechanic = sumCategory('mechanic');
+      const exp_equipment_purchases = sumCategory('equipment_purchases');
+      const exp_pivot = sumCategory('pivot');
+      const exp_tires = sumCategory('tires');
+      const exp_sprinklers = sumCategory('sprinklers');
 
       const nonPivotTotal =
         exp_fertilizer + exp_diesel + exp_twine + exp_seed +
@@ -900,9 +1095,9 @@
       document.getElementById('homeYearDisplay').textContent = currentYear;
     }
 
-    // GATHER & SAVE / LOAD DATA PER YEAR (simplified example)[web:33][web:37][web:44][web:45]
+    // GATHER & SAVE / LOAD DATA PER YEAR[web:33][web:37][web:44][web:45]
     function gatherAllData() {
-      const data = { year: currentYear, yields: {}, inputs: {}, hay: [], logbook: [] };
+      const data = { year: currentYear, yields: {}, inputs: {}, hay: [], loadRecords: [], logbook: [] };
 
       // Yields
       ['yield_1', 'yield_2', 'yield_3'].forEach(group => {
@@ -914,14 +1109,23 @@
           data.yields[group][field][type] = input.value || '';
         });
       });
-      // Inputs
-      data.inputs.rows = {};
-      document.querySelectorAll('[data-group="inputs"]').forEach(input => {
-        const field = input.dataset.field;
+
+      // Inputs – sub‑rows
+      data.inputs.subRows = {};
+      document.querySelectorAll('[data-group="inputs_sub"]').forEach(input => {
+        const category = input.dataset.category;
         const type = input.dataset.type;
-        data.inputs.rows[field] = data.inputs.rows[field] || {};
-        data.inputs.rows[field][type] = input.value || '';
+        const tr = input.closest('tr');
+        if (!category || !tr) return;
+        data.inputs.subRows[category] = data.inputs.subRows[category] || [];
+        const rows = Array.from(tr.parentElement.children);
+        const rowIndex = rows.indexOf(tr);
+        if (!data.inputs.subRows[category][rowIndex]) {
+          data.inputs.subRows[category][rowIndex] = { name: '', amount: '', notes: '' };
+        }
+        data.inputs.subRows[category][rowIndex][type] = input.value || '';
       });
+
       // Hay sales
       document.querySelectorAll('#hay_sales_body tr').forEach(tr => {
         data.hay.push({
@@ -933,6 +1137,18 @@
           notes: tr.querySelector('.hay_notes')?.value || ''
         });
       });
+
+      // Load records
+      document.querySelectorAll('#load_records_body tr').forEach(tr => {
+        data.loadRecords.push({
+          date: tr.querySelector('.load_date')?.value || '',
+          cutting: tr.querySelector('.load_cutting')?.value || '',
+          field: tr.querySelector('.load_field')?.value || '',
+          bales: tr.querySelector('.load_bales')?.value || '',
+          notes: tr.querySelector('.load_notes')?.value || ''
+        });
+      });
+
       // Logbook
       document.querySelectorAll('#logbook_body tr').forEach(tr => {
         const tds = tr.querySelectorAll('td');
@@ -958,23 +1174,41 @@
       localStorage.setItem(key, JSON.stringify(data));
       recalcHaySales();
       recalcFinancialTotals();
+      recalcLoadRecordsTotals();
     }
 
     function loadAll() {
       const key = 'gvr_farm_' + currentYear;
       const raw = localStorage.getItem(key);
-      // Clear dynamic tables
       document.getElementById('hay_sales_body').innerHTML = '';
       document.getElementById('logbook_body').innerHTML = '';
+      document.getElementById('load_records_body').innerHTML = '';
+
+      // Clear all input sub‑category tables
+      [
+        'fertilizer','diesel','twine','seed',
+        'equipment_cost','mechanic','equipment_purchases',
+        'pivot','tires','sprinklers'
+      ].forEach(cat => {
+        const tbody = document.querySelector(`#inputs_${cat}_table tbody`);
+        if (tbody) tbody.innerHTML = '';
+      });
 
       if (!raw) {
-        // Start empty for this year
+        // First time for this year: start with one blank row per category and per dynamic table
+        ['fertilizer','diesel','twine','seed',
+         'equipment_cost','mechanic','equipment_purchases',
+         'pivot','tires','sprinklers'
+        ].forEach(cat => addInputSubRow(cat));
         addHaySaleRow();
+        addLoadRecordRow();
         addLogbookRow();
         recalcHaySales();
         recalcFinancialTotals();
+        recalcLoadRecordsTotals();
         return;
       }
+
       const data = JSON.parse(raw);
 
       // Yields
@@ -987,19 +1221,31 @@
         });
       });
 
-      // Inputs
-      const inputsData = data.inputs && data.inputs.rows ? data.inputs.rows : {};
-      document.querySelectorAll('[data-group="inputs"]').forEach(input => {
-        const field = input.dataset.field;
-        const type = input.dataset.type;
-        input.value = (inputsData[field] && inputsData[field][type]) || '';
-      });
+      // Inputs sub‑rows
+      if (data.inputs && data.inputs.subRows) {
+        Object.keys(data.inputs.subRows).forEach(cat => {
+          const rows = data.inputs.subRows[cat] || [];
+          rows.forEach(r => addInputSubRow(cat, r));
+        });
+      } else {
+        ['fertilizer','diesel','twine','seed',
+         'equipment_cost','mechanic','equipment_purchases',
+         'pivot','tires','sprinklers'
+        ].forEach(cat => addInputSubRow(cat));
+      }
 
       // Hay
       if (data.hay && data.hay.length) {
         data.hay.forEach(row => addHaySaleRow(row));
       } else {
         addHaySaleRow();
+      }
+
+      // Load records
+      if (data.loadRecords && data.loadRecords.length) {
+        data.loadRecords.forEach(row => addLoadRecordRow(row));
+      } else {
+        addLoadRecordRow();
       }
 
       // Logbook
@@ -1011,6 +1257,7 @@
 
       recalcHaySales();
       recalcFinancialTotals();
+      recalcLoadRecordsTotals();
     }
 
     // Initial load
