@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <title>Grass Valley Ranch – Farming</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- jsPDF library for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
   <style>
     body { font-family: Arial, sans-serif; margin: 8px; }
     h1 { font-size: 20px; margin-bottom: 4px; }
@@ -75,24 +80,129 @@
     .notes_preview > div {
       margin-bottom: 3px;
     }
+    .home-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .home-actions button {
+      flex: 1;
+      min-width: 150px;
+      padding: 12px;
+      font-size: 14px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .home-actions button.secondary {
+      background: #2196F3;
+    }
+    .home-actions button.tertiary {
+      background: #ff9800;
+    }
+    .home-actions button:hover {
+      opacity: 0.9;
+    }
+    .summary-box {
+      background: #e8f5e9;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .summary-box h3 { margin-top: 0; }
+    @media print {
+      .tabs, .tab, button, .print-bar, .home-actions { display: none !important; }
+      .tabcontent { display: block !important; }
+    }
   </style>
 </head>
 <body>
   <h1>Grass Valley Ranch – Farming</h1>
   <div>Crop yields, inputs, hay sales, and organic tilth logbook</div>
 
+  <!-- Shared crop year selector -->
+  <div class="section" style="margin-top:8px;">
+    <label for="cropYear"><strong>Crop year</strong></label>
+    <select id="cropYear"></select>
+  </div>
+
   <div class="tabs">
-    <div class="tab active" data-tab="yields">Crop Yields</div>
+    <div class="tab active" data-tab="home">🏠 Home</div>
+    <div class="tab" data-tab="yields">Crop Yields</div>
     <div class="tab" data-tab="inputs">Inputs</div>
     <div class="tab" data-tab="hay_sales">Hay Sales</div>
     <div class="tab" data-tab="logbook">Organic Tilth Logbook</div>
   </div>
 
+  <!-- HOME SCREEN -->
+  <div id="home" class="tabcontent active">
+    <div class="section">
+      <h2>Home – Year Overview</h2>
+      <p>Year: <strong id="homeYearDisplay">2026</strong></p>
+
+      <div class="summary-box">
+        <h3>Quick Summary</h3>
+        <p>📊 <strong>Total Income (hay):</strong> <span id="total_income">$0</span></p>
+        <p>💸 <strong>Total Expenses:</strong> <span id="total_expenses">$0</span></p>
+        <p>📈 <strong>Net (Income – Expenses):</strong> <span id="net_income">$0</span></p>
+      </div>
+
+      <div class="home-actions">
+        <button onclick="exportYearToJSON()">📁 Export Year Data (JSON)</button>
+        <button class="secondary" onclick="printAllData()">🖨️ Print All Data</button>
+        <button class="tertiary" onclick="exportYearToPDF()">📄 Export to PDF</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Expenses – non‑pivot</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Sub‑category</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Fertilizer</td><td><span id="exp_fertilizer">$0</span></td></tr>
+          <tr><td>Diesel</td><td><span id="exp_diesel">$0</span></td></tr>
+          <tr><td>Twine</td><td><span id="exp_twine">$0</span></td></tr>
+          <tr><td>Seed</td><td><span id="exp_seed">$0</span></td></tr>
+          <tr><td>Equipment cost</td><td><span id="exp_equipment_cost">$0</span></td></tr>
+          <tr><td>Mechanic bills</td><td><span id="exp_mechanic">$0</span></td></tr>
+          <tr><td>Equipment purchases</td><td><span id="exp_equipment_purchases">$0</span></td></tr>
+          <tr><td>Tires</td><td><span id="exp_tires">$0</span></td></tr>
+          <tr><td>Sprinklers</td><td><span id="exp_sprinklers">$0</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h3>Pivot expenses (separate)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Pivot sub‑category</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pivot cost</td>
+            <td><span id="exp_pivot">$0</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- CROP YIELDS -->
-  <div id="yields" class="tabcontent active">
+  <div id="yields" class="tabcontent">
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('yields')">Print</button>
-      <button class="small-btn" onclick="printTab('yields')">Export PDF</button>
     </div>
 
     <div class="section">
@@ -105,17 +215,58 @@
             <th>Field</th>
             <th>Yield (tons)</th>
             <th>Notes</th>
+            <th>Attachments</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>13</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>14</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>15</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>16</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>17</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>8A</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>8B</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Huntfield</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr>
+            <td>13</td>
+            <td><input type="number" data-group="yield_1" data-field="13" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="13" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td><input type="number" data-group="yield_1" data-field="14" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="14" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td><input type="number" data-group="yield_1" data-field="15" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="15" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td><input type="number" data-group="yield_1" data-field="16" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="16" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><input type="number" data-group="yield_1" data-field="17" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="17" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>8A</td>
+            <td><input type="number" data-group="yield_1" data-field="8A" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="8A" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>8B</td>
+            <td><input type="number" data-group="yield_1" data-field="8B" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="8B" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Huntfield</td>
+            <td><input type="number" data-group="yield_1" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_1" data-field="Huntfield" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
         </tbody>
       </table>
 
@@ -126,17 +277,58 @@
             <th>Field</th>
             <th>Yield (tons)</th>
             <th>Notes</th>
+            <th>Attachments</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>13</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>14</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>15</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>16</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>17</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>8A</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>8B</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Huntfield</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr>
+            <td>13</td>
+            <td><input type="number" data-group="yield_2" data-field="13" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="13" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td><input type="number" data-group="yield_2" data-field="14" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="14" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td><input type="number" data-group="yield_2" data-field="15" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="15" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td><input type="number" data-group="yield_2" data-field="16" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="16" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><input type="number" data-group="yield_2" data-field="17" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="17" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>8A</td>
+            <td><input type="number" data-group="yield_2" data-field="8A" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="8A" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>8B</td>
+            <td><input type="number" data-group="yield_2" data-field="8B" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="8B" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Huntfield</td>
+            <td><input type="number" data-group="yield_2" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_2" data-field="Huntfield" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
         </tbody>
       </table>
 
@@ -147,25 +339,66 @@
             <th>Field</th>
             <th>Yield (tons)</th>
             <th>Notes</th>
+            <th>Attachments</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>13</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>14</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>15</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>16</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>17</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>8A</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>8B</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Huntfield</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr>
+            <td>13</td>
+            <td><input type="number" data-group="yield_3" data-field="13" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="13" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td><input type="number" data-group="yield_3" data-field="14" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="14" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td><input type="number" data-group="yield_3" data-field="15" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="15" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td><input type="number" data-group="yield_3" data-field="16" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="16" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><input type="number" data-group="yield_3" data-field="17" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="17" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>8A</td>
+            <td><input type="number" data-group="yield_3" data-field="8A" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="8A" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>8B</td>
+            <td><input type="number" data-group="yield_3" data-field="8B" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="8B" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Huntfield</td>
+            <td><input type="number" data-group="yield_3" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
+            <td><input type="text" data-group="yield_3" data-field="Huntfield" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <div class="section">
       <h2>Notes & attachments – crop yields</h2>
-      <textarea class="notes_box" rows="3" placeholder="General notes for crop yields..."></textarea>
-      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <textarea class="notes_box" rows="3" placeholder="General notes for crop yields..." oninput="saveAll()" data-group="yield_notes" data-field="general"></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();">
       <div class="notes_preview"></div>
     </div>
   </div>
@@ -174,7 +407,6 @@
   <div id="inputs" class="tabcontent">
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('inputs')">Print</button>
-      <button class="small-btn" onclick="printTab('inputs')">Export PDF</button>
     </div>
 
     <div class="section">
@@ -183,29 +415,80 @@
         <thead>
           <tr>
             <th>Category</th>
-            <th>Amount / units</th>
+            <th>Amount / units (use $)</th>
             <th>Notes</th>
+            <th>Attachments</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Fertilizer</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Diesel</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Twine</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Seed</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Equipment cost</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Mechanic bills</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Equipment purchases</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Pivot cost</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Tires</td><td><input type="number"></td><td><input type="text"></td></tr>
-          <tr><td>Sprinklers</td><td><input type="number"></td><td><input type="text"></td></tr>
+          <tr>
+            <td>Fertilizer</td>
+            <td><input type="number" data-group="inputs" data-field="fertilizer" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="fertilizer" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Diesel</td>
+            <td><input type="number" data-group="inputs" data-field="diesel" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="diesel" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Twine</td>
+            <td><input type="number" data-group="inputs" data-field="twine" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="twine" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Seed</td>
+            <td><input type="number" data-group="inputs" data-field="seed" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="seed" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Equipment cost</td>
+            <td><input type="number" data-group="inputs" data-field="equipment_cost" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="equipment_cost" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Mechanic bills</td>
+            <td><input type="number" data-group="inputs" data-field="mechanic" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="mechanic" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Equipment purchases</td>
+            <td><input type="number" data-group="inputs" data-field="equipment_purchases" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="equipment_purchases" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Pivot cost</td>
+            <td><input type="number" data-group="inputs" data-field="pivot" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="pivot" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Tires</td>
+            <td><input type="number" data-group="inputs" data-field="tires" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="tires" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
+          <tr>
+            <td>Sprinklers</td>
+            <td><input type="number" data-group="inputs" data-field="sprinklers" data-type="amount" oninput="saveAll()"></td>
+            <td><input type="text" data-group="inputs" data-field="sprinklers" data-type="notes" oninput="saveAll()"></td>
+            <td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();"><div class="notes_preview"></div></td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <div class="section">
       <h2>Notes & attachments – inputs</h2>
-      <textarea class="notes_box" rows="3" placeholder="General notes for inputs..."></textarea>
-      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <textarea class="notes_box" rows="3" placeholder="General notes for inputs..." oninput="saveAll()" data-group="inputs_notes" data-field="general"></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();">
       <div class="notes_preview"></div>
     </div>
   </div>
@@ -214,7 +497,6 @@
   <div id="hay_sales" class="tabcontent">
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('hay_sales')">Print</button>
-      <button class="small-btn" onclick="printTab('hay_sales')">Export PDF</button>
     </div>
 
     <div class="section">
@@ -229,6 +511,7 @@
             <th>Price per unit</th>
             <th>Total $</th>
             <th>Picture / Notes</th>
+            <th>Load ticket</th>
             <th></th>
           </tr>
         </thead>
@@ -246,8 +529,8 @@
 
     <div class="section">
       <h2>Notes & attachments – hay sales</h2>
-      <textarea class="notes_box" rows="3" placeholder="General notes for hay sales..."></textarea>
-      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <textarea class="notes_box" rows="3" placeholder="General notes for hay sales..." oninput="saveAll()" data-group="hay_notes" data-field="general"></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();">
       <div class="notes_preview"></div>
     </div>
   </div>
@@ -256,7 +539,6 @@
   <div id="logbook" class="tabcontent">
     <div class="print-bar">
       <button class="small-btn" onclick="printTab('logbook')">Print</button>
-      <button class="small-btn" onclick="printTab('logbook')">Export PDF</button>
     </div>
 
     <div class="section">
@@ -273,6 +555,7 @@
             <th>Crop type</th>
             <th>Location or Bale</th>
             <th>Notes</th>
+            <th>Attachments</th>
             <th></th>
           </tr>
         </thead>
@@ -285,13 +568,34 @@
 
     <div class="section">
       <h2>Notes & attachments – logbook</h2>
-      <textarea class="notes_box" rows="3" placeholder="General notes for Organic Tilth logbook..."></textarea>
-      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this)">
+      <textarea class="notes_box" rows="3" placeholder="General notes for Organic Tilth logbook..." oninput="saveAll()" data-group="logbook_notes" data-field="general"></textarea>
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll();">
       <div class="notes_preview"></div>
     </div>
   </div>
 
   <script>
+    // Global crop year
+    let currentYear = 2026;
+
+    // Populate year dropdown 2026–2035[web:28]
+    (function initYearDropdown() {
+      const select = document.getElementById('cropYear');
+      const start = 2026;
+      const years = 10;
+      for (let y = start; y < start + years; y++) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        if (y === currentYear) opt.selected = true;
+        select.appendChild(opt);
+      }
+      select.addEventListener('change', () => {
+        currentYear = Number(select.value);
+        loadAll();
+      });
+    })();
+
     // Tabs
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -303,14 +607,15 @@
       });
     });
 
-    // Print / PDF (uses browser print on that tab content) [web:178]
+    // Print single tab[web:52]
     function printTab(tabId) {
       const tabContent = document.getElementById(tabId);
       if (!tabContent) return;
       const w = window.open('', '', 'width=900,height=700');
       w.document.write('<html><head><title>Print - ' + tabId + '</title>');
-      w.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}table{width:100%;border-collapse:collapse;font-size:12px;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button{display:none;}.print-bar{display:none;}</style>');
+      w.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}table{width:100%;border-collapse:collapse;font-size:12px;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button,input[type=file]{display:none;}.print-bar{display:none;}</style>');
       w.document.write('</head><body>');
+      w.document.write('<h1>Grass Valley Ranch – ' + currentYear + '</h1>');
       w.document.write(tabContent.innerHTML);
       w.document.write('</body></html>');
       w.document.close();
@@ -318,7 +623,119 @@
       w.print();
     }
 
-    // Notes / attachment preview [web:176][web:179]
+    // Print all data
+    function printAllData() {
+      const w = window.open('', '', 'width=900,height=700');
+      w.document.write('<html><head><title>Grass Valley Ranch ' + currentYear + '</title>');
+      w.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}h2{page-break-before:always;margin-top:20px;}table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button,input[type=file]{display:none;}.print-bar{display:none;}</style>');
+      w.document.write('</head><body>');
+      w.document.write('<h1>Grass Valley Ranch – Farming Records ' + currentYear + '</h1>');
+      w.document.write(document.getElementById('yields').innerHTML);
+      w.document.write(document.getElementById('inputs').innerHTML);
+      w.document.write(document.getElementById('hay_sales').innerHTML);
+      w.document.write(document.getElementById('logbook').innerHTML);
+      w.document.write('</body></html>');
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    // Export year data to JSON[web:46][web:47]
+    function exportYearToJSON() {
+      const data = gatherAllData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `GVR_Farm_${currentYear}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('Year ' + currentYear + ' data exported.');
+    }
+
+    // Export year data to PDF using jsPDF + autotable[web:51][web:57]
+    function exportYearToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.text('Grass Valley Ranch - Farming Records', 14, 20);
+      doc.setFontSize(12);
+      doc.text('Crop Year: ' + currentYear, 14, 28);
+
+      let yPos = 40;
+
+      // Yields table content
+      doc.setFontSize(14);
+      doc.text('Crop Yields', 14, yPos);
+      yPos += 10;
+
+      const yieldsData = [];
+      ['yield_1', 'yield_2', 'yield_3'].forEach((cutting, idx) => {
+        ['13', '14', '15', '16', '17', '8A', '8B', 'Huntfield'].forEach(field => {
+          const tonsInput = document.querySelector(`[data-group="${cutting}"][data-field="${field}"][data-type="tons"]`);
+          const notesInput = document.querySelector(`[data-group="${cutting}"][data-field="${field}"][data-type="notes"]`);
+          if (tonsInput && (tonsInput.value || notesInput.value)) {
+            yieldsData.push([`Cutting ${idx + 1}`, field, tonsInput.value || '-', notesInput.value || '']);
+          }
+        });
+      });
+
+      if (yieldsData.length > 0) {
+        doc.autoTable({
+          startY: yPos,
+          head: [['Cutting', 'Field', 'Yield (tons)', 'Notes']],
+          body: yieldsData,
+          theme: 'grid',
+          headStyles: { fillColor: [68, 114, 196] },
+          margin: { left: 14 }
+        });
+        yPos = doc.lastAutoTable.finalY + 15;
+      }
+
+      // Hay Sales
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+      doc.setFontSize(14);
+      doc.text('Hay Sales', 14, yPos);
+      yPos += 10;
+
+      const haySalesData = [];
+      document.querySelectorAll('#hay_sales_body tr').forEach(tr => {
+        const date = tr.querySelector('.hay_date')?.value || '';
+        const buyer = tr.querySelector('.hay_buyer')?.value || '';
+        const crop = tr.querySelector('.hay_crop')?.value || '';
+        const units = tr.querySelector('.hay_units')?.value || '';
+        const price = tr.querySelector('.hay_price')?.value || '';
+        const total = tr.querySelector('.hay_total')?.textContent || '';
+        if (date || buyer || units || price) {
+          haySalesData.push([date, buyer, crop, units, price, total]);
+        }
+      });
+
+      if (haySalesData.length > 0) {
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date', 'Buyer/Lot', 'Crop', 'Units', 'Price', 'Total']],
+          body: haySalesData,
+          theme: 'grid',
+          headStyles: { fillColor: [68, 114, 196] },
+          margin: { left: 14 }
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      const totalSales = document.getElementById('hay_sales_total').textContent;
+      doc.setFontSize(12);
+      doc.text('Total Hay Sales: ' + totalSales, 14, yPos);
+
+      doc.save(`GVR_Farm_${currentYear}.pdf`);
+      alert('PDF exported.');
+    }
+
+    // Attachment preview[web:29][web:30]
     function previewNotesFiles(input) {
       const preview = input.parentElement.querySelector('.notes_preview');
       if (!preview) return;
@@ -326,7 +743,7 @@
       const files = input.files || [];
       Array.from(files).forEach(file => {
         const item = document.createElement('div');
-        if (file.type.startsWith('image/')) {
+        if (file.type && file.type.startsWith('image/')) {
           const img = document.createElement('img');
           img.className = 'img-preview';
           const reader = new FileReader();
@@ -344,27 +761,31 @@
     }
 
     function formatMoney(x) {
-      return '$' + x.toLocaleString(undefined, {maximumFractionDigits: 0});
+      return '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 });
     }
 
-    // Hay sales table
+    // HAY SALES ROWS
     function addHaySaleRow(rowData) {
       const body = document.getElementById('hay_sales_body');
       const r = rowData || {};
       const tr = document.createElement('tr');
       tr.innerHTML =
-        '<td><input type="date" class="hay_date" value="' + (r.date || '') + '"></td>' +
-        '<td><input type="text" class="hay_buyer" value="' + (r.buyer || '') + '"></td>' +
-        '<td><input type="text" class="hay_crop" value="' + (r.crop || '') + '"></td>' +
-        '<td><input type="number" class="hay_units" value="' + (r.units || '') + '" oninput="updateHayRow(this)"></td>' +
-        '<td><input type="number" class="hay_price" step="0.01" value="' + (r.price || '') + '" oninput="updateHayRow(this)"></td>' +
+        '<td><input type="date" class="hay_date" value="' + (r.date || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" class="hay_buyer" value="' + (r.buyer || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" class="hay_crop" value="' + (r.crop || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="number" class="hay_units" value="' + (r.units || '') + '" oninput="updateHayRow(this); saveAll()"></td>' +
+        '<td><input type="number" class="hay_price" step="0.01" value="' + (r.price || '') + '" oninput="updateHayRow(this); saveAll()"></td>' +
         '<td><span class="hay_total">' + (r.total || '$0') + '</span></td>' +
         '<td>' +
-          '<input type="file" accept="image/*" class="hay_img_input" onchange="previewImage(this)">' +
+          '<input type="file" accept="image/*" class="hay_img_input" onchange="previewImage(this); saveAll()">' +
           '<img class="img-preview" style="display:none;">' +
-          '<input type="text" class="hay_notes" placeholder="Notes" value="' + (r.notes || '') + '">' +
+          '<input type="text" class="hay_notes" placeholder="Notes" value="' + (r.notes || '') + '" oninput="saveAll()">' +
         '</td>' +
-        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcHaySales();">🗑</button></td>';
+        '<td>' +
+          '<input type="file" accept="image/*,.pdf,.doc,.docx" class="hay_load_ticket" onchange="previewNotesFiles(this); saveAll()">' +
+          '<div class="notes_preview"></div>' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcHaySales(); saveAll();">🗑</button></td>';
       body.appendChild(tr);
     }
 
@@ -393,42 +814,207 @@
     }
 
     function recalcHaySales() {
+      const rows = document.querySelectorAll('#hay_sales_body tr');
       let sum = 0;
-      document.querySelectorAll('#hay_sales_body .hay_total').forEach(span => {
-        const txt = span.textContent.replace('$','').replace(/,/g,'');
-        sum += Number(txt || 0);
+      rows.forEach(tr => {
+        const units = Number(tr.querySelector('.hay_units')?.value || 0);
+        const price = Number(tr.querySelector('.hay_price')?.value || 0);
+        sum += units * price;
       });
-      document.getElementById('hay_sales_total').textContent = formatMoney(sum);
+      const totalSpan = document.getElementById('hay_sales_total');
+      totalSpan.textContent = rows.length ? formatMoney(sum) : '–';
+      recalcFinancialTotals();
     }
 
-    // Organic logbook
+    // LOGBOOK ROWS
     function addLogbookRow(rowData) {
       const body = document.getElementById('logbook_body');
       const r = rowData || {};
       const tr = document.createElement('tr');
       tr.innerHTML =
-        '<td><input type="date" class="log_date" value="' + (r.date || '') + '"></td>' +
-        '<td><input type="text" class="log_field" value="' + (r.field || '') + '"></td>' +
-        '<td><input type="text" class="log_event" value="' + (r.event || '') + '"></td>' +
-        '<td><input type="text" class="log_washed" value="' + (r.washed || '') + '"></td>' +
-        '<td><input type="text" class="log_input" value="' + (r.input || '') + '"></td>' +
-        '<td><input type="text" class="log_harvest" value="' + (r.harvest || '') + '"></td>' +
-        '<td><input type="text" class="log_crop" value="' + (r.crop || '') + '"></td>' +
-        '<td><input type="text" class="log_location" value="' + (r.location || '') + '"></td>' +
-        '<td><input type="text" class="log_notes" value="' + (r.notes || '') + '"></td>' +
-        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
+        '<td><input type="date" value="' + (r.date || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.field || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.event || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.washed || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.input || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="number" value="' + (r.harvest || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.crop || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.location || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.notes || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this); saveAll()"><div class="notes_preview"></div></td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll();">🗑</button></td>';
       body.appendChild(tr);
     }
 
-    // Initialize dynamic tables
-    window.addEventListener('load', () => {
-      if (!document.getElementById('hay_sales_body').children.length) {
+    // FINANCIAL TOTALS (income, expenses, pivot)
+    function recalcFinancialTotals() {
+      // Income from hay
+      let income = 0;
+      document.querySelectorAll('#hay_sales_body tr').forEach(tr => {
+        const units = Number(tr.querySelector('.hay_units')?.value || 0);
+        const price = Number(tr.querySelector('.hay_price')?.value || 0);
+        income += units * price;
+      });
+
+      function getInputAmount(field) {
+        const el = document.querySelector(`[data-group="inputs"][data-field="${field}"][data-type="amount"]`);
+        return el ? Number(el.value || 0) : 0;
+      }
+
+      const exp_fertilizer = getInputAmount('fertilizer');
+      const exp_diesel = getInputAmount('diesel');
+      const exp_twine = getInputAmount('twine');
+      const exp_seed = getInputAmount('seed');
+      const exp_equipment_cost = getInputAmount('equipment_cost');
+      const exp_mechanic = getInputAmount('mechanic');
+      const exp_equipment_purchases = getInputAmount('equipment_purchases');
+      const exp_pivot = getInputAmount('pivot');
+      const exp_tires = getInputAmount('tires');
+      const exp_sprinklers = getInputAmount('sprinklers');
+
+      const nonPivotTotal =
+        exp_fertilizer + exp_diesel + exp_twine + exp_seed +
+        exp_equipment_cost + exp_mechanic + exp_equipment_purchases +
+        exp_tires + exp_sprinklers;
+
+      const totalExpenses = nonPivotTotal + exp_pivot;
+      const net = income - totalExpenses;
+
+      const money = x => '$' + x.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+      document.getElementById('total_income').textContent = money(income);
+      document.getElementById('total_expenses').textContent = money(totalExpenses);
+      document.getElementById('net_income').textContent = money(net);
+
+      document.getElementById('exp_fertilizer').textContent = money(exp_fertilizer);
+      document.getElementById('exp_diesel').textContent = money(exp_diesel);
+      document.getElementById('exp_twine').textContent = money(exp_twine);
+      document.getElementById('exp_seed').textContent = money(exp_seed);
+      document.getElementById('exp_equipment_cost').textContent = money(exp_equipment_cost);
+      document.getElementById('exp_mechanic').textContent = money(exp_mechanic);
+      document.getElementById('exp_equipment_purchases').textContent = money(exp_equipment_purchases);
+      document.getElementById('exp_tires').textContent = money(exp_tires);
+      document.getElementById('exp_sprinklers').textContent = money(exp_sprinklers);
+      document.getElementById('exp_pivot').textContent = money(exp_pivot);
+
+      document.getElementById('homeYearDisplay').textContent = currentYear;
+    }
+
+    // GATHER & SAVE / LOAD DATA PER YEAR (simplified example)[web:33][web:37][web:44][web:45]
+    function gatherAllData() {
+      const data = { year: currentYear, yields: {}, inputs: {}, hay: [], logbook: [] };
+
+      // Yields
+      ['yield_1', 'yield_2', 'yield_3'].forEach(group => {
+        data.yields[group] = {};
+        document.querySelectorAll(`[data-group="${group}"]`).forEach(input => {
+          const field = input.dataset.field;
+          const type = input.dataset.type;
+          data.yields[group][field] = data.yields[group][field] || {};
+          data.yields[group][field][type] = input.value || '';
+        });
+      });
+      // Inputs
+      data.inputs.rows = {};
+      document.querySelectorAll('[data-group="inputs"]').forEach(input => {
+        const field = input.dataset.field;
+        const type = input.dataset.type;
+        data.inputs.rows[field] = data.inputs.rows[field] || {};
+        data.inputs.rows[field][type] = input.value || '';
+      });
+      // Hay sales
+      document.querySelectorAll('#hay_sales_body tr').forEach(tr => {
+        data.hay.push({
+          date: tr.querySelector('.hay_date')?.value || '',
+          buyer: tr.querySelector('.hay_buyer')?.value || '',
+          crop: tr.querySelector('.hay_crop')?.value || '',
+          units: tr.querySelector('.hay_units')?.value || '',
+          price: tr.querySelector('.hay_price')?.value || '',
+          notes: tr.querySelector('.hay_notes')?.value || ''
+        });
+      });
+      // Logbook
+      document.querySelectorAll('#logbook_body tr').forEach(tr => {
+        const tds = tr.querySelectorAll('td');
+        data.logbook.push({
+          date: tds[0].querySelector('input')?.value || '',
+          field: tds[1].querySelector('input')?.value || '',
+          event: tds[2].querySelector('input')?.value || '',
+          washed: tds[3].querySelector('input')?.value || '',
+          input: tds[4].querySelector('input')?.value || '',
+          harvest: tds[5].querySelector('input')?.value || '',
+          crop: tds[6].querySelector('input')?.value || '',
+          location: tds[7].querySelector('input')?.value || '',
+          notes: tds[8].querySelector('input')?.value || ''
+        });
+      });
+
+      return data;
+    }
+
+    function saveAll() {
+      const data = gatherAllData();
+      const key = 'gvr_farm_' + currentYear;
+      localStorage.setItem(key, JSON.stringify(data));
+      recalcHaySales();
+      recalcFinancialTotals();
+    }
+
+    function loadAll() {
+      const key = 'gvr_farm_' + currentYear;
+      const raw = localStorage.getItem(key);
+      // Clear dynamic tables
+      document.getElementById('hay_sales_body').innerHTML = '';
+      document.getElementById('logbook_body').innerHTML = '';
+
+      if (!raw) {
+        // Start empty for this year
+        addHaySaleRow();
+        addLogbookRow();
+        recalcHaySales();
+        recalcFinancialTotals();
+        return;
+      }
+      const data = JSON.parse(raw);
+
+      // Yields
+      ['yield_1', 'yield_2', 'yield_3'].forEach(group => {
+        const groupData = data.yields && data.yields[group] ? data.yields[group] : {};
+        document.querySelectorAll(`[data-group="${group}"]`).forEach(input => {
+          const field = input.dataset.field;
+          const type = input.dataset.type;
+          input.value = (groupData[field] && groupData[field][type]) || '';
+        });
+      });
+
+      // Inputs
+      const inputsData = data.inputs && data.inputs.rows ? data.inputs.rows : {};
+      document.querySelectorAll('[data-group="inputs"]').forEach(input => {
+        const field = input.dataset.field;
+        const type = input.dataset.type;
+        input.value = (inputsData[field] && inputsData[field][type]) || '';
+      });
+
+      // Hay
+      if (data.hay && data.hay.length) {
+        data.hay.forEach(row => addHaySaleRow(row));
+      } else {
         addHaySaleRow();
       }
-      if (!document.getElementById('logbook_body').children.length) {
+
+      // Logbook
+      if (data.logbook && data.logbook.length) {
+        data.logbook.forEach(row => addLogbookRow(row));
+      } else {
         addLogbookRow();
       }
-    });
+
+      recalcHaySales();
+      recalcFinancialTotals();
+    }
+
+    // Initial load
+    loadAll();
   </script>
 </body>
 </html>
