@@ -656,7 +656,7 @@
     </div>
   </div>
 
-  <!-- FARMING APP (unchanged UI) -->
+  <!-- FARMING APP -->
   <div id="farm_screen" class="app-screen">
     <h1>Grass Valley Ranch Farming</h1>
     <div>Crop yields, inputs, hay sales, load records, and organic tilth logbook</div>
@@ -834,8 +834,7 @@
             </tr>
           </thead>
           <tbody>
-            <!-- group yield2, same fields -->
-            <!-- 13 -->
+            <!-- group yield2 -->
             <tr>
               <td>13</td>
               <td><input type="number" data-group="yield2" data-field="13" data-type="tons" oninput="saveAll()"></td>
@@ -845,7 +844,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 14 -->
             <tr>
               <td>14</td>
               <td><input type="number" data-group="yield2" data-field="14" data-type="tons" oninput="saveAll()"></td>
@@ -855,7 +853,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 15 -->
             <tr>
               <td>15</td>
               <td><input type="number" data-group="yield2" data-field="15" data-type="tons" oninput="saveAll()"></td>
@@ -865,7 +862,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 16 -->
             <tr>
               <td>16</td>
               <td><input type="number" data-group="yield2" data-field="16" data-type="tons" oninput="saveAll()"></td>
@@ -875,7 +871,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 17 -->
             <tr>
               <td>17</td>
               <td><input type="number" data-group="yield2" data-field="17" data-type="tons" oninput="saveAll()"></td>
@@ -885,7 +880,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 8A -->
             <tr>
               <td>8A</td>
               <td><input type="number" data-group="yield2" data-field="8A" data-type="tons" oninput="saveAll()"></td>
@@ -895,7 +889,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 8B -->
             <tr>
               <td>8B</td>
               <td><input type="number" data-group="yield2" data-field="8B" data-type="tons" oninput="saveAll()"></td>
@@ -905,7 +898,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- Huntfield -->
             <tr>
               <td>Huntfield</td>
               <td><input type="number" data-group="yield2" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
@@ -929,7 +921,7 @@
             </tr>
           </thead>
           <tbody>
-            <!-- group yield3, same fields pattern -->
+            <!-- group yield3 -->
             <tr>
               <td>13</td>
               <td><input type="number" data-group="yield3" data-field="13" data-type="tons" oninput="saveAll()"></td>
@@ -1281,7 +1273,7 @@
           label.textContent = file.name;
           item.appendChild(label);
         } else {
-          item.textContent = '📄 ' + file.name;
+          item.textContent = file.name;
         }
         preview.appendChild(item);
       });
@@ -1895,7 +1887,7 @@
     }
 
     // =====================================================================
-    // FARMING APP JS (summarized)
+    // FARMING APP JS
     // =====================================================================
     let currentYear = 2026;
 
@@ -2123,7 +2115,7 @@
           const notesInput = document.querySelector('[data-group="' + group + '"][data-field="' + field + '"][data-type="notes"]');
           if (tonsInput && (tonsInput.value || notesInput.value)) {
             yieldsData.push([
-              (idx + 1) + 'st/nd/rd'.split('/')[idx] || (idx+1),
+              idx === 0 ? '1st' : (idx === 1 ? '2nd' : '3rd'),
               field,
               tonsInput.value || '-',
               notesInput.value || ''
