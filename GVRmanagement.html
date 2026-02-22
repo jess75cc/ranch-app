@@ -174,7 +174,7 @@
     <div>Select which app you want to work in.</div>
     <div class="app-switcher">
       <button class="btn-home active"  onclick="showApp('home_screen', this)">Home</button>
-      <button class="btn-ranch" onclick="showApp('ranch_screen', this)">Working Ranch Model</button>
+      <button class="btn-ranch" onclick="showApp('ranch_screen', this)">Cattle</button>
       <button class="btn-farm"  onclick="showApp('farm_screen', this)">Farming & Hay</button>
     </div>
   </div>
@@ -188,7 +188,7 @@
     </div>
   </div>
 
-  <!-- RANCH APP (from paste-2.txt, slightly renamed outer ids) -->
+  <!-- RANCH APP -->
   <div id="ranch_screen" class="app-screen">
     <h1>Grass Valley Ranch</h1>
     <div>Working Ranch Model – Interactive App</div>
@@ -424,12 +424,8 @@
         <label>Cow females per bull (ratio)
           <input id="bulls_cow_ratio" type="number" value="11" data-tab="bulls">
         </label>
-        <label>Cow backup bulls (% of required)
-          <input id="bulls_cow_backup_pct" type="number" step="0.01" value="5" data-tab="bulls">
-        </label>
 
         <div class="kpi">Cow required bulls: <span id="bulls_cow_required">–</span></div>
-        <div class="kpi">Cow backup bulls: <span id="bulls_cow_backup">–</span></div>
         <div class="kpi">Cow total bulls: <span id="bulls_cow_total">–</span></div>
       </div>
 
@@ -441,12 +437,8 @@
         <label>Heifer females per bull (ratio)
           <input id="bulls_heifer_ratio" type="number" value="15" data-tab="bulls">
         </label>
-        <label>Heifer backup bulls (% of required)
-          <input id="bulls_heifer_backup_pct" type="number" step="0.01" value="5" data-tab="bulls">
-        </label>
 
         <div class="kpi">Heifer required bulls: <span id="bulls_heifer_required">–</span></div>
-        <div class="kpi">Heifer backup bulls: <span id="bulls_heifer_backup">–</span></div>
         <div class="kpi">Heifer total bulls: <span id="bulls_heifer_total">–</span></div>
       </div>
 
@@ -664,7 +656,7 @@
     </div>
   </div>
 
-  <!-- FARMING APP (from paste.txt) -->
+  <!-- FARMING APP (unchanged UI) -->
   <div id="farm_screen" class="app-screen">
     <h1>Grass Valley Ranch Farming</h1>
     <div>Crop yields, inputs, hay sales, load records, and organic tilth logbook</div>
@@ -1300,7 +1292,7 @@
     }
 
     // =====================================================================
-    // RANCH APP JS (unchanged logic, just uses r_* tab ids)
+    // RANCH APP JS
     // =====================================================================
     const currentYearByTab = {
       home: '2026',
@@ -1710,38 +1702,12 @@
         '<td><input type="number" class="bull_price" step="0.01" value="' + (pricePerHead || '') + '"></td>' +
         '<td><input type="text" class="bull_location" value="' + (location || '') + '"></td>' +
         '<td>' +
-          '<input type="file" accept="image/*,.pdf,.doc,.docx" multiple class="bull_files" onchange="previewBullFiles(this)">' +
+          '<input type="file" accept="image/*,.pdf,.doc,.docx" multiple class="bull_files" onchange="previewNotesFiles(this)">' +
           '<div class="notes_preview" style="margin-top:4px;"></div>' +
           '<input type="text" class="bull_notes" placeholder="Notes" value="' + (notes || '') + '">' +
         '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
       body.appendChild(tr);
-    }
-
-    function previewBullFiles(input) {
-      const preview = input.parentElement.querySelector('.notes_preview');
-      if (!preview) return;
-      preview.innerHTML = '';
-      const files = input.files || [];
-      Array.from(files).forEach(file => {
-        const item = document.createElement('div');
-        if (file.type.startsWith('image/')) {
-          const img = document.createElement('img');
-          img.className = 'img-preview';
-          const reader = new FileReader();
-          reader.onload = e => { img.src = e.target.result; };
-          reader.readAsDataURL(file);
-          item.appendChild(img);
-          const lbl = document.createElement('div');
-          lbl.textContent = file.name;
-          lbl.style.fontSize = '11px';
-          item.appendChild(lbl);
-        } else {
-          item.textContent = '📄 ' + file.name;
-          item.style.fontSize = '11px';
-        }
-        preview.appendChild(item);
-      });
     }
 
     function addSaleRow(bodyId) {
@@ -1809,7 +1775,6 @@
       const loganDry = num('logan_dry');
 
       const bullRatioBase = num('bull_ratio');
-      const backupPctBase = num('backup_bulls_pct') / 100.0;
       const weaningRateBase = num('weaning_rate') / 100.0;
       const steerPctBase = num('steer_pct') / 100.0;
       const heiferPctBase = num('heifer_pct') / 100.0;
@@ -1838,19 +1803,15 @@
 
       const cowsBreeding = num('bulls_cow_breeding') || breedingFemales;
       const cowsRatio = num('bulls_cow_ratio') || bullRatioBase;
-      const cowsBackupPct = num('bulls_cow_backup_pct') / 100.0;
 
       const cowsRequired = cowsRatio > 0 ? Math.ceil(cowsBreeding / cowsRatio) : 0;
-      const cowsBackup = Math.ceil(cowsRequired * cowsBackupPct);
-      const cowsTotal = cowsRequired + cowsBackup;
+      const cowsTotal = cowsRequired;
 
       const heiferBreeding = num('bulls_heifer_breeding');
       const heiferRatio = num('bulls_heifer_ratio') || cowsRatio;
-      const heiferBackupPct = num('bulls_heifer_backup_pct') / 100.0;
 
       const heiferRequired = heiferRatio > 0 ? Math.ceil(heiferBreeding / heiferRatio) : 0;
-      const heiferBackup = Math.ceil(heiferRequired * heiferBackupPct);
-      const heiferTotal = heiferRequired + heiferBackup;
+      const heiferTotal = heiferRequired;
 
       const totalBulls = cowsTotal + heiferTotal;
 
@@ -1914,11 +1875,9 @@
       document.getElementById('kpi_aums_required').textContent = formatNumber(aumsRequired, 0);
 
       document.getElementById('bulls_cow_required').textContent = cowsRequired;
-      document.getElementById('bulls_cow_backup').textContent = cowsBackup;
       document.getElementById('bulls_cow_total').textContent = cowsTotal;
 
       document.getElementById('bulls_heifer_required').textContent = heiferRequired;
-      document.getElementById('bulls_heifer_backup').textContent = heiferBackup;
       document.getElementById('bulls_heifer_total').textContent = heiferTotal;
 
       document.getElementById('bulls_total').textContent = totalBulls;
@@ -1936,7 +1895,7 @@
     }
 
     // =====================================================================
-    // FARMING APP JS (summarized from paste.txt)
+    // FARMING APP JS (summarized)
     // =====================================================================
     let currentYear = 2026;
 
@@ -2335,65 +2294,51 @@
     }
 
     function recalcFinancialTotals() {
-      let income = 0;
-      document.querySelectorAll('#haysales_body tr').forEach(tr => {
-        const units = Number(tr.querySelector('.hay_units')?.value || 0);
-        const price = Number(tr.querySelector('.hay_price')?.value || 0);
-        income += units * price;
+      let totals = {
+        fertilizer: 0,
+        diesel: 0,
+        twine: 0,
+        seed: 0,
+        equipmentcost: 0,
+        mechanic: 0,
+        equipmentpurchases: 0,
+        pivot: 0,
+        tires: 0,
+        sprinklers: 0
+      };
+
+      document.querySelectorAll('.input_sub_amount').forEach(inp => {
+        const cat = inp.dataset.category;
+        if (!cat) return;
+        totals[cat] += Number(inp.value || 0);
       });
 
-      function sumCategory(category) {
-        let total = 0;
-        document.querySelectorAll('.input_sub_amount[data-category="' + category + '"]').forEach(input => {
-          total += Number(input.value || 0);
-        });
-        return total;
-      }
+      document.getElementById('exp_fertilizer').textContent = totals.fertilizer ? formatMoney(totals.fertilizer) : '0';
+      document.getElementById('exp_diesel').textContent = totals.diesel ? formatMoney(totals.diesel) : '0';
+      document.getElementById('exp_twine').textContent = totals.twine ? formatMoney(totals.twine) : '0';
+      document.getElementById('exp_seed').textContent = totals.seed ? formatMoney(totals.seed) : '0';
+      document.getElementById('exp_equipmentcost').textContent = totals.equipmentcost ? formatMoney(totals.equipmentcost) : '0';
+      document.getElementById('exp_mechanic').textContent = totals.mechanic ? formatMoney(totals.mechanic) : '0';
+      document.getElementById('exp_equipmentpurchases').textContent = totals.equipmentpurchases ? formatMoney(totals.equipmentpurchases) : '0';
+      document.getElementById('exp_pivot').textContent = totals.pivot ? formatMoney(totals.pivot) : '0';
+      document.getElementById('exp_tires').textContent = totals.tires ? formatMoney(totals.tires) : '0';
+      document.getElementById('exp_sprinklers').textContent = totals.sprinklers ? formatMoney(totals.sprinklers) : '0';
 
-      const exp_fertilizer = sumCategory('fertilizer');
-      const exp_diesel = sumCategory('diesel');
-      const exp_twine = sumCategory('twine');
-      const exp_seed = sumCategory('seed');
-      const exp_equipmentcost = sumCategory('equipmentcost');
-      const exp_mechanic = sumCategory('mechanic');
-      const exp_equipmentpurchases = sumCategory('equipmentpurchases');
-      const exp_pivot = sumCategory('pivot');
-      const exp_tires = sumCategory('tires');
-      const exp_sprinklers = sumCategory('sprinklers');
+      const totalExpenses =
+        totals.fertilizer + totals.diesel + totals.twine + totals.seed +
+        totals.equipmentcost + totals.mechanic + totals.equipmentpurchases +
+        totals.pivot + totals.tires + totals.sprinklers;
+      document.getElementById('total_expenses').textContent = totalExpenses ? formatMoney(totalExpenses) : '0';
 
-      const nonPivotTotal =
-        exp_fertilizer + exp_diesel + exp_twine + exp_seed +
-        exp_equipmentcost + exp_mechanic + exp_equipmentpurchases +
-        exp_tires + exp_sprinklers;
-
-      const totalExpenses = nonPivotTotal + exp_pivot;
+      const incomeText = document.getElementById('haysales_total').textContent || '0';
+      const income = Number(incomeText.replace('$','').replace(/,/g,'') || 0);
       const net = income - totalExpenses;
-
-      function money(x) {
-        return x.toLocaleString(undefined, {maximumFractionDigits: 0});
-      }
-
-      document.getElementById('total_income').textContent = money(income);
-      document.getElementById('total_expenses').textContent = money(totalExpenses);
-      document.getElementById('net_income').textContent = money(net);
-
-      document.getElementById('exp_fertilizer').textContent = money(exp_fertilizer);
-      document.getElementById('exp_diesel').textContent = money(exp_diesel);
-      document.getElementById('exp_twine').textContent = money(exp_twine);
-      document.getElementById('exp_seed').textContent = money(exp_seed);
-      document.getElementById('exp_equipmentcost').textContent = money(exp_equipmentcost);
-      document.getElementById('exp_mechanic').textContent = money(exp_mechanic);
-      document.getElementById('exp_equipmentpurchases').textContent = money(exp_equipmentpurchases);
-      document.getElementById('exp_tires').textContent = money(exp_tires);
-      document.getElementById('exp_sprinklers').textContent = money(exp_sprinklers);
-      document.getElementById('exp_pivot').textContent = money(exp_pivot);
-
-      document.getElementById('homeYearDisplay').textContent = currentYear;
+      document.getElementById('total_income').textContent = income ? formatMoney(income) : '0';
+      document.getElementById('net_income').textContent = formatMoney(net);
     }
 
     // INIT
     window.addEventListener('load', () => {
-      // Ranch
       const initialYear = 2026;
       document.getElementById('year_home').value = initialYear;
       loadTabYear('inputs', initialYear);
@@ -2404,13 +2349,6 @@
       loadTabYear('blm', initialYear);
       recalc();
       recalcSales();
-
-      const turnout = document.getElementById('bull_turnout_date');
-      const bringin = document.getElementById('bull_bringin_date');
-      if (turnout) turnout.addEventListener('change', recalc);
-      if (bringin) bringin.addEventListener('change', recalc);
-
-      // Farming
       initYearDropdown();
       loadAll();
     });
