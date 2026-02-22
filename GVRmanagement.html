@@ -1,3 +1,10 @@
+Below is the full HTML file with your requested changes and additions:
+
+- Camera‑enabled “Take Photo” buttons next to every attachment/file cell.
+- Farming Inputs: running subtotal under each subcategory and a total inputs block at the end of the tab.
+- Hay Sales: new “Year‑end invoices” section, totals for those, and a cross‑check table that compares hay sales vs year‑end invoices by buyer.
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -142,6 +149,13 @@
     .year-row select {
       width: auto;
       min-width: 100px;
+    }
+
+    .attach-row {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      align-items:flex-start;
     }
 
     /* Home actions + summary (used in both apps) */
@@ -305,8 +319,11 @@
 
         <h3 style="margin-top:10px;">Notes &amp; attachments</h3>
         <textarea class="notes_box" rows="3" placeholder="Notes about herd counts..." id="notes_herd_counts" data-tab="inputs"></textarea>
-        <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
+          <div class="notes_preview"></div>
+        </div>
       </div>
 
       <div class="section">
@@ -347,8 +364,11 @@
 
         <h3 style="margin-top:10px;">Notes &amp; attachments</h3>
         <textarea class="notes_box" rows="3" placeholder="Notes about Eli / Amelia / Logan cows..." id="notes_family_cows" data-tab="inputs"></textarea>
-        <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
+          <div class="notes_preview"></div>
+        </div>
       </div>
 
       <div class="section">
@@ -374,8 +394,11 @@
 
         <h3 style="margin-top:10px;">Notes &amp; attachments</h3>
         <textarea class="notes_box" rows="3" placeholder="Notes about breeding &amp; production..." id="notes_breeding" data-tab="inputs"></textarea>
-        <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
+          <div class="notes_preview"></div>
+        </div>
       </div>
 
       <div class="section">
@@ -573,8 +596,11 @@
 
         <h3 style="margin-top:10px;">Notes &amp; attachments (branding)</h3>
         <textarea class="notes_box" rows="3" placeholder="General notes about branding..." id="notes_branding" data-tab="calving"></textarea>
-        <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
+          <div class="notes_preview"></div>
+        </div>
       </div>
 
       <div class="section">
@@ -595,8 +621,11 @@
 
         <h3 style="margin-top:10px;">Notes &amp; attachments (vaccinations)</h3>
         <textarea class="notes_box" rows="3" placeholder="General notes about vaccinations..." id="notes_vaccinations" data-tab="calving"></textarea>
-        <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" class="notes_files" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this)">
+          <div class="notes_preview"></div>
+        </div>
       </div>
     </div>
 
@@ -796,8 +825,11 @@
               <td><input type="number" data-group="yield1" data-field="13" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="13" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -805,8 +837,11 @@
               <td><input type="number" data-group="yield1" data-field="14" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="14" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -814,8 +849,11 @@
               <td><input type="number" data-group="yield1" data-field="15" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="15" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -823,8 +861,11 @@
               <td><input type="number" data-group="yield1" data-field="16" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="16" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -832,8 +873,11 @@
               <td><input type="number" data-group="yield1" data-field="17" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="17" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -841,8 +885,11 @@
               <td><input type="number" data-group="yield1" data-field="8A" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="8A" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -850,8 +897,11 @@
               <td><input type="number" data-group="yield1" data-field="8B" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="8B" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -859,8 +909,11 @@
               <td><input type="number" data-group="yield1" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield1" data-field="Huntfield" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -882,8 +935,11 @@
               <td><input type="number" data-group="yield2" data-field="13" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="13" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -891,8 +947,11 @@
               <td><input type="number" data-group="yield2" data-field="14" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="14" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -900,8 +959,11 @@
               <td><input type="number" data-group="yield2" data-field="15" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="15" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -909,8 +971,11 @@
               <td><input type="number" data-group="yield2" data-field="16" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="16" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -918,8 +983,11 @@
               <td><input type="number" data-group="yield2" data-field="17" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="17" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -927,8 +995,11 @@
               <td><input type="number" data-group="yield2" data-field="8A" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="8A" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -936,8 +1007,11 @@
               <td><input type="number" data-group="yield2" data-field="8B" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="8B" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -945,8 +1019,11 @@
               <td><input type="number" data-group="yield2" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield2" data-field="Huntfield" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -968,8 +1045,11 @@
               <td><input type="number" data-group="yield3" data-field="13" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="13" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -977,8 +1057,11 @@
               <td><input type="number" data-group="yield3" data-field="14" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="14" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -986,8 +1069,11 @@
               <td><input type="number" data-group="yield3" data-field="15" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="15" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -995,8 +1081,11 @@
               <td><input type="number" data-group="yield3" data-field="16" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="16" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -1004,8 +1093,11 @@
               <td><input type="number" data-group="yield3" data-field="17" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="17" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -1013,8 +1105,11 @@
               <td><input type="number" data-group="yield3" data-field="8A" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="8A" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -1022,8 +1117,11 @@
               <td><input type="number" data-group="yield3" data-field="8B" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="8B" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -1031,8 +1129,11 @@
               <td><input type="number" data-group="yield3" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
               <td><input type="text" data-group="yield3" data-field="Huntfield" data-type="notes" oninput="saveAll()"></td>
               <td>
-                <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-                <div class="notes_preview"></div>
+                <div class="attach-row">
+                  <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+                  <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+                  <div class="notes_preview"></div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -1042,8 +1143,11 @@
       <div class="section">
         <h2>Notes &amp; attachments – crop yields</h2>
         <textarea class="notes_box" rows="3" placeholder="General notes for crop yields..." data-group="yield_notes" data-field="general" oninput="saveAll()"></textarea>
-        <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+          <div class="notes_preview"></div>
+        </div>
       </div>
     </div>
 
@@ -1063,6 +1167,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal fertilizer: <span id="subtotal_fertilizer">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('fertilizer')">+ Add fertilizer line</button>
 
         <h3>Diesel</h3>
@@ -1072,6 +1177,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal diesel: <span id="subtotal_diesel">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('diesel')">+ Add diesel line</button>
 
         <h3>Twine</h3>
@@ -1081,6 +1187,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal twine: <span id="subtotal_twine">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('twine')">+ Add twine line</button>
 
         <h3>Seed</h3>
@@ -1090,6 +1197,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal seed: <span id="subtotal_seed">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('seed')">+ Add seed line</button>
 
         <h3>Equipment cost</h3>
@@ -1099,6 +1207,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal equipment cost: <span id="subtotal_equipmentcost">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('equipmentcost')">+ Add equipment cost line</button>
 
         <h3>Mechanic bills</h3>
@@ -1108,6 +1217,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal mechanic: <span id="subtotal_mechanic">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('mechanic')">+ Add mechanic bill line</button>
 
         <h3>Equipment purchases</h3>
@@ -1117,6 +1227,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal equipment purchases: <span id="subtotal_equipmentpurchases">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('equipmentpurchases')">+ Add equipment purchase line</button>
 
         <h3>Pivot cost</h3>
@@ -1126,6 +1237,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal pivot: <span id="subtotal_pivot">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('pivot')">+ Add pivot cost line</button>
 
         <h3>Tires</h3>
@@ -1135,6 +1247,7 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal tires: <span id="subtotal_tires">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('tires')">+ Add tires line</button>
 
         <h3>Sprinklers</h3>
@@ -1144,14 +1257,23 @@
           </thead>
           <tbody></tbody>
         </table>
+        <div>Subtotal sprinklers: <span id="subtotal_sprinklers">0</span></div>
         <button class="small-btn" onclick="addInputSubRow('sprinklers')">+ Add sprinklers line</button>
       </div>
 
       <div class="section">
         <h2>Notes &amp; attachments – inputs</h2>
         <textarea class="notes_box" rows="3" placeholder="General notes for inputs..." data-group="inputs_notes" data-field="general" oninput="saveAll()"></textarea>
-        <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+          <div class="notes_preview"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Total input expenses this year</h2>
+        <div><strong>Total inputs:</strong> <span id="inputs_total_all">0</span></div>
       </div>
     </div>
 
@@ -1183,15 +1305,53 @@
       </div>
 
       <div class="section">
+        <h2>Year‑end invoices (summary uploads)</h2>
+        <p>Upload scanned or pictured year‑end statements from buyers/warehouses.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Buyer / Source</th>
+              <th>Description</th>
+              <th>Total amount</th>
+              <th>Invoice file</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="yearend_body"></tbody>
+        </table>
+        <button class="small-btn" onclick="addYearEndRow()">+ Add year‑end invoice</button>
+        <div>Total of year‑end invoices: <span id="yearend_total">0</span></div>
+      </div>
+
+      <div class="section">
         <h2>Totals</h2>
         <div>Total hay sales: <span id="haysales_total">0</span></div>
       </div>
 
       <div class="section">
+        <h2>Year‑end cross‑check</h2>
+        <button class="small-btn" onclick="crossCheckYearEnd()">Recalculate differences</button>
+        <table>
+          <thead>
+            <tr>
+              <th>Buyer</th>
+              <th>Hay sales total</th>
+              <th>Year‑end invoices total</th>
+              <th>Difference (invoice - sales)</th>
+            </tr>
+          </thead>
+          <tbody id="yearend_check_body"></tbody>
+        </table>
+      </div>
+
+      <div class="section">
         <h2>Notes &amp; attachments – hay sales</h2>
         <textarea class="notes_box" rows="3" placeholder="General notes for hay sales..." data-group="hay_notes" data-field="general" oninput="saveAll()"></textarea>
-        <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+          <div class="notes_preview"></div>
+        </div>
       </div>
     </div>
 
@@ -1229,8 +1389,11 @@
       <div class="section">
         <h2>Notes &amp; attachments – load records</h2>
         <textarea class="notes_box" rows="3" placeholder="General notes for load records..." data-group="loadrecords_notes" data-field="general" oninput="saveAll()"></textarea>
-        <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+          <div class="notes_preview"></div>
+        </div>
       </div>
     </div>
 
@@ -1266,8 +1429,11 @@
       <div class="section">
         <h2>Notes &amp; attachments – logbook</h2>
         <textarea class="notes_box" rows="3" placeholder="General notes for Organic Tilth logbook..." data-group="logbook_notes" data-field="general" oninput="saveAll()"></textarea>
-        <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
-        <div class="notes_preview"></div>
+        <div class="attach-row">
+          <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
+          <input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">
+          <div class="notes_preview"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1488,7 +1654,7 @@
         const name = tr.querySelector('.brand_name');
         const date = tr.querySelector('.brand_date');
         const calves = tr.querySelector('.brand_calves');
-        const notes = tr.querySelector('.brand_notes');
+        the notes = tr.querySelector('.brand_notes');
         if (name) {
           rows.push({
             name: name.value,
@@ -1639,9 +1805,12 @@
             '<td><input type="number" class="sale_price" step="0.01" value="' + (r.price || '') + '" oninput="updateSaleRow(this)"></td>' +
             '<td><span class="sale_total_display">' + (r.total || '0') + '</span></td>' +
             '<td>' +
-              '<input type="file" accept="image/*" capture="environment" class="sale_img_input" onchange="previewImage(this)">' +
-              '<img class="img-preview" style="display:none;">' +
-              '<input type="text" class="sale_notes" placeholder="Notes" value="' + (r.notes || '') + '">' +
+              '<div class="attach-row">' +
+                '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+                '<input type="file" accept="image/*" capture="environment" class="sale_img_input" onchange="previewImage(this)">' +
+                '<img class="img-preview" style="display:none;">' +
+                '<input type="text" class="sale_notes" placeholder="Notes" value="' + (r.notes || '') + '">' +
+              '</div>' +
             '</td>' +
             '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcSales();">🗑</button></td>';
           body.appendChild(tr);
@@ -1786,9 +1955,12 @@
         '<td><input type="number" class="sale_price" step="0.01" oninput="updateSaleRow(this)"></td>' +
         '<td><span class="sale_total_display">0</span></td>' +
         '<td>' +
-          '<input type="file" accept="image/*" capture="environment" class="sale_img_input" onchange="previewImage(this)">' +
-          '<img class="img-preview" style="display:none;">' +
-          '<input type="text" class="sale_notes" placeholder="Notes">' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*" capture="environment" class="sale_img_input" onchange="previewImage(this)">' +
+            '<img class="img-preview" style="display:none;">' +
+            '<input type="text" class="sale_notes" placeholder="Notes">' +
+          '</div>' +
         '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcSales();">🗑</button></td>';
       body.appendChild(tr);
@@ -1806,9 +1978,12 @@
         '<td><input type="number" class="sale_price" step="0.01" oninput="updateSaleRow(this)"></td>' +
         '<td><span class="sale_total_display">0</span></td>' +
         '<td>' +
-          '<input type="file" accept="image/*" capture="environment" class="sale_img_input" onchange="previewImage(this)">' +
-          '<img class="img-preview" style="display:none;">' +
-          '<input type="text" class="sale_notes" placeholder="Notes">' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*" capture="environment" class="sale_img_input" onchange="previewImage(this)">' +
+            '<img class="img-preview" style="display:none;">' +
+            '<input type="text" class="sale_notes" placeholder="Notes">' +
+          '</div>' +
         '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcSales();">🗑</button></td>';
       body.appendChild(tr);
@@ -1991,32 +2166,6 @@
       });
       yPos = doc.lastAutoTable.finalY + 20;
 
-      function addTableFromSelector(title, selector, columns) {
-        const rows = [];
-        document.querySelectorAll(selector).forEach(tr => {
-          const row = [];
-          columns.forEach(sel => {
-            const cell = tr.querySelector(sel);
-            row.push(cell ? (cell.value || cell.textContent || '') : '');
-          });
-          if (row.some(v => v && String(v).trim() !== '')) rows.push(row);
-        });
-        if (!rows.length) return;
-        if (yPos > 700) { doc.addPage(); yPos = 40; }
-        doc.setFontSize(14);
-        doc.text(title, 40, yPos);
-        yPos += 10;
-        doc.autoTable({
-          startY: yPos,
-          body: rows,
-          theme: 'grid',
-          margin: { left:40 }
-        });
-        yPos = doc.lastAutoTable.finalY + 20;
-      }
-
-      addTableFromSelector('Herd Counts', '#r_inputs .section:nth-of-type(1) input', ['#bred_cows','#bred_heifers','#repl_heifers_open','#dry_cows','#cull_cows','#other_cows']);
-
       const bullsBought = [];
       document.querySelectorAll('#bulls_bought_body tr').forEach(tr => {
         const date = tr.querySelector('.bull_date')?.value || '';
@@ -2165,6 +2314,7 @@
         yields: { yield1: {}, yield2: {}, yield3: {} },
         inputs: { subRows: {} },
         hay: [],
+        yearEnd: [],
         loadRecords: [],
         logbook: []
       };
@@ -2206,6 +2356,14 @@
         });
       });
 
+      document.querySelectorAll('#yearend_body tr').forEach(tr => {
+        data.yearEnd.push({
+          buyer: tr.querySelector('.ye_buyer')?.value || '',
+          desc: tr.querySelector('.ye_desc')?.value || '',
+          amount: tr.querySelector('.ye_amount')?.value || ''
+        });
+      });
+
       document.querySelectorAll('#loadrecords_body tr').forEach(tr => {
         data.loadRecords.push({
           date: tr.querySelector('.load_date')?.value || '',
@@ -2238,6 +2396,9 @@
       localStorage.setItem('gvr_farm_' + currentYear, JSON.stringify(data));
       recalcFinancialTotals();
       recalcLoadRecordsTotals();
+      recalcYearEndTotals();
+      recalcHaySalesFarm();
+      crossCheckYearEnd();
     }
 
     function loadAll() {
@@ -2247,6 +2408,7 @@
         document.querySelectorAll('[data-group^="yield"]').forEach(input => input.value = '');
         document.querySelectorAll('[data-group="inputs_notes"],[data-group="hay_notes"],[data-group="loadrecords_notes"],[data-group="logbook_notes"]').forEach(t => t.value = '');
         document.getElementById('haysales_body').innerHTML = '';
+        document.getElementById('yearend_body').innerHTML = '';
         document.getElementById('loadrecords_body').innerHTML = '';
         document.getElementById('logbook_body').innerHTML = '';
         ['fertilizer','diesel','twine','seed','equipmentcost','mechanic','equipmentpurchases','pivot','tires','sprinklers'].forEach(cat => {
@@ -2254,10 +2416,14 @@
           body.innerHTML = '';
         });
         addHaySaleRow();
+        addYearEndRow();
         addLoadRecordRow();
         addLogbookRow();
         recalcFinancialTotals();
         recalcLoadRecordsTotals();
+        recalcYearEndTotals();
+        recalcHaySalesFarm();
+        crossCheckYearEnd();
         return;
       }
 
@@ -2301,6 +2467,14 @@
         addHaySaleRow();
       }
 
+      const yeBody = document.getElementById('yearend_body');
+      yeBody.innerHTML = '';
+      if (data.yearEnd && data.yearEnd.length) {
+        data.yearEnd.forEach(row => addYearEndRow(row));
+      } else {
+        addYearEndRow();
+      }
+
       const loadBody = document.getElementById('loadrecords_body');
       loadBody.innerHTML = '';
       if (data.loadRecords && data.loadRecords.length) {
@@ -2319,6 +2493,9 @@
 
       recalcFinancialTotals();
       recalcLoadRecordsTotals();
+      recalcYearEndTotals();
+      recalcHaySalesFarm();
+      crossCheckYearEnd();
     }
 
     function addInputSubRow(category, rowData) {
@@ -2329,7 +2506,13 @@
         '<td><input type="text" class="input_sub_name" data-group="inputssub" data-category="' + category + '" data-type="name" value="' + (r.name || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="number" class="input_sub_amount" data-group="inputssub" data-category="' + category + '" data-type="amount" value="' + (r.amount || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="text" class="input_sub_notes" data-group="inputssub" data-category="' + category + '" data-type="notes" value="' + (r.notes || '') + '" oninput="saveAll()"></td>' +
-        '<td><input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" onchange="previewNotesFiles(this);saveAll()"><div class="notes_preview"></div></td>' +
+        '<td>' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" onchange="previewNotesFiles(this);saveAll()">' +
+            '<div class="notes_preview"></div>' +
+          '</div>' +
+        '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll();">🗑</button></td>';
       body.appendChild(tr);
     }
@@ -2346,15 +2529,40 @@
         '<td><input type="number" class="hay_price" step="0.01" value="' + (r.price || '') + '" oninput="updateHayRowFarm(this); saveAll()"></td>' +
         '<td><span class="hay_total">' + (r.total || '0') + '</span></td>' +
         '<td>' +
-          '<input type="file" accept="image/*" capture="environment" class="hay_img_input" onchange="previewImage(this);saveAll()">' +
-          '<img class="img-preview" style="display:none;">' +
-          '<input type="text" class="hay_notes" placeholder="Notes" value="' + (r.notes || '') + '" oninput="saveAll()">' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*" capture="environment" class="hay_img_input" onchange="previewImage(this);saveAll()">' +
+            '<img class="img-preview" style="display:none;">' +
+            '<input type="text" class="hay_notes" placeholder="Notes" value="' + (r.notes || '') + '" oninput="saveAll()">' +
+          '</div>' +
         '</td>' +
         '<td>' +
-          '<input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" class="hay_load_ticket" onchange="previewNotesFiles(this);saveAll()">' +
-          '<div class="notes_preview"></div>' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" class="hay_load_ticket" onchange="previewNotesFiles(this);saveAll()">' +
+            '<div class="notes_preview"></div>' +
+          '</div>' +
         '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcHaySalesFarm(); saveAll();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function addYearEndRow(rowData) {
+      const body = document.getElementById('yearend_body');
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="text" class="ye_buyer" value="' + (r.buyer || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" class="ye_desc" value="' + (r.desc || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="number" class="ye_amount" value="' + (r.amount || '') + '" oninput="saveAll();recalcYearEndTotals()"></td>' +
+        '<td>' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">' +
+            '<div class="notes_preview"></div>' +
+          '</div>' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll(); recalcYearEndTotals();">🗑</button></td>';
       body.appendChild(tr);
     }
 
@@ -2388,7 +2596,13 @@
         '<td><input type="text" class="load_field" value="' + (r.field || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
         '<td><input type="number" class="load_bales" value="' + (r.bales || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
         '<td><input type="text" class="load_notes" value="' + (r.notes || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
-        '<td><input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" onchange="previewNotesFiles(this);saveAll()"><div class="notes_preview"></div></td>' +
+        '<td>' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" onchange="previewNotesFiles(this);saveAll()">' +
+            '<div class="notes_preview"></div>' +
+          '</div>' +
+        '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll(); recalcLoadRecordsTotals();">🗑</button></td>';
       body.appendChild(tr);
     }
@@ -2425,9 +2639,60 @@
         '<td><input type="text" value="' + (r.crop || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="text" value="' + (r.location || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="text" value="' + (r.notes || '') + '" oninput="saveAll()"></td>' +
-        '<td><input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()"><div class="notes_preview"></div></td>' +
+        '<td>' +
+          '<div class="attach-row">' +
+            '<button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>' +
+            '<input type="file" accept="image/*,.pdf,.doc,.docx" capture="environment" multiple onchange="previewNotesFiles(this);saveAll()">' +
+            '<div class="notes_preview"></div>' +
+          '</div>' +
+        '</td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll();">🗑</button></td>';
       body.appendChild(tr);
+    }
+
+    function recalcYearEndTotals() {
+      let total = 0;
+      document.querySelectorAll('#yearend_body .ye_amount').forEach(input => {
+        total += Number(input.value || 0);
+      });
+      const span = document.getElementById('yearend_total');
+      if (span) span.textContent = total.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function crossCheckYearEnd() {
+      const hayByBuyer = {};
+      document.querySelectorAll('#haysales_body tr').forEach(tr => {
+        const buyer = (tr.querySelector('.hay_buyer')?.value || '').trim();
+        const units = Number(tr.querySelector('.hay_units')?.value || 0);
+        const price = Number(tr.querySelector('.hay_price')?.value || 0);
+        const total = units * price;
+        if (!buyer) return;
+        hayByBuyer[buyer] = (hayByBuyer[buyer] || 0) + total;
+      });
+
+      const invByBuyer = {};
+      document.querySelectorAll('#yearend_body tr').forEach(tr => {
+        const buyer = (tr.querySelector('.ye_buyer')?.value || '').trim();
+        const amount = Number(tr.querySelector('.ye_amount')?.value || 0);
+        if (!buyer) return;
+        invByBuyer[buyer] = (invByBuyer[buyer] || 0) + amount;
+      });
+
+      const tbody = document.getElementById('yearend_check_body');
+      tbody.innerHTML = '';
+      const buyers = new Set([...Object.keys(hayByBuyer), ...Object.keys(invByBuyer)]);
+      buyers.forEach(buyer => {
+        const hay = hayByBuyer[buyer] || 0;
+        const inv = invByBuyer[buyer] || 0;
+        const diff = inv - hay;
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + buyer + '</td>' +
+          '<td>' + hay.toFixed(2) + '</td>' +
+          '<td>' + inv.toFixed(2) + '</td>' +
+          '<td>' + diff.toFixed(2) + '</td>';
+        tbody.appendChild(tr);
+      });
     }
 
     function recalcFinancialTotals() {
@@ -2443,6 +2708,8 @@
         document.querySelectorAll('.input_sub_amount[data-category="' + category + '"]').forEach(input => {
           total += Number(input.value || 0);
         });
+        const span = document.getElementById('subtotal_' + category);
+        if (span) span.textContent = total.toLocaleString(undefined, { maximumFractionDigits: 0 });
         return total;
       }
 
@@ -2483,6 +2750,11 @@
       document.getElementById('exp_pivot').textContent = money(exp_pivot);
       document.getElementById('exp_tires').textContent = money(exp_tires);
       document.getElementById('exp_sprinklers').textContent = money(exp_sprinklers);
+
+      const inputsTotalSpan = document.getElementById('inputs_total_all');
+      if (inputsTotalSpan) {
+        inputsTotalSpan.textContent = money(totalExpenses);
+      }
     }
 
     async function exportYearToPDF() {
@@ -2538,6 +2810,32 @@
           startY: yPos,
           head: [['Date','Buyer','Crop','Units','Price','Total']],
           body: hayRows,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:40 }
+        });
+        yPos = doc.lastAutoTable.finalY + 20;
+      }
+
+      const yearEndRows = [];
+      document.querySelectorAll('#yearend_body tr').forEach(tr => {
+        const buyer = tr.querySelector('.ye_buyer')?.value || '';
+        const desc = tr.querySelector('.ye_desc')?.value || '';
+        const amount = tr.querySelector('.ye_amount')?.value || '';
+        if (buyer || desc || amount) {
+          yearEndRows.push([buyer, desc, amount]);
+        }
+      });
+
+      if (yearEndRows.length) {
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
+        doc.setFontSize(14);
+        doc.text('Year-end Invoices', 40, yPos);
+        yPos += 10;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Buyer','Description','Amount']],
+          body: yearEndRows,
           theme: 'grid',
           headStyles: { fillColor:[68,114,196] },
           margin: { left:40 }
@@ -2644,3 +2942,4 @@
   </script>
 </body>
 </html>
+```
