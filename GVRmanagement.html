@@ -1295,6 +1295,41 @@
       w.print();
     }
 
+    // ---------- SIMPLE EDIT PASSWORD ----------
+    const EDIT_PASSWORD = '0277';
+    let editUnlocked = false;
+
+    function ensureEditAccess() {
+      if (editUnlocked) return true;
+      const entered = window.prompt('Enter password to make changes:');
+      if (entered === null) return false;
+      if (entered === EDIT_PASSWORD) {
+        editUnlocked = true;
+        return true;
+      }
+      alert('Incorrect password.');
+      return false;
+    }
+
+    // Require password before changing any inputs, selects, or textareas
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.addEventListener('beforeinput', (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement)) return;
+
+        if (e.inputType === 'insertText' ||
+            e.inputType === 'insertFromPaste' ||
+            e.inputType === 'deleteContentBackward' ||
+            e.inputType === 'deleteContentForward' ||
+            e.inputType === 'insertReplacementText' ||
+            e.inputType === 'insertFromDrop') {
+          if (!ensureEditAccess()) {
+            e.preventDefault();
+          }
+        }
+      }, { capture: true });
+    });
+
     // -------- SHARED NOTES FILE PREVIEW --------
     function previewNotesFiles(input) {
       const preview = input.parentElement.querySelector('.notes_preview');
@@ -1314,7 +1349,7 @@
           label.textContent = file.name;
           item.appendChild(label);
         } else {
-          item.textContent = '📄 ' + file.name;
+          item.textContent = file.name;
         }
         preview.appendChild(item);
       });
@@ -1726,15 +1761,15 @@
       body.appendChild(tr);
     }
 
-    function addBullBoughtRow(dateStr, num, price, loc, notes) {
+    function addBullBoughtRow(dateStr, numStr, priceStr, locationStr, notesStr) {
       const body = document.getElementById('bulls_bought_body');
       const tr = document.createElement('tr');
       tr.innerHTML =
         '<td><input type="date" class="bull_date" value="' + (dateStr || '') + '"></td>' +
-        '<td><input type="number" class="bull_num" value="' + (num || '') + '"></td>' +
-        '<td><input type="number" class="bull_price" step="0.01" value="' + (price || '') + '"></td>' +
-        '<td><input type="text" class="bull_location" value="' + (loc || '') + '"></td>' +
-        '<td><input type="text" class="bull_notes" value="' + (notes || '') + '"></td>' +
+        '<td><input type="number" class="bull_num" value="' + (numStr || '') + '"></td>' +
+        '<td><input type="number" class="bull_price" step="0.01" value="' + (priceStr || '') + '"></td>' +
+        '<td><input type="text" class="bull_location" value="' + (locationStr || '') + '"></td>' +
+        '<td><input type="text" class="bull_notes" value="' + (notesStr || '') + '"></td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove();">🗑</button></td>';
       body.appendChild(tr);
     }
@@ -1745,7 +1780,7 @@
       tr.innerHTML =
         '<td><input type="date" class="sale_date"></td>' +
         '<td><input type="text" class="sale_lot"></td>' +
-        '<td><input type="text" class="sale_type"></td>' +
+        '<td><input type="text" class="sale_type" value="Steer"></td>' +
         '<td><input type="number" class="sale_head" oninput="updateSaleRow(this)"></td>' +
         '<td><input type="number" class="sale_wt" oninput="updateSaleRow(this)"></td>' +
         '<td><input type="number" class="sale_price" step="0.01" oninput="updateSaleRow(this)"></td>' +
@@ -1765,7 +1800,7 @@
       tr.innerHTML =
         '<td><input type="date" class="sale_date"></td>' +
         '<td><input type="text" class="sale_lot"></td>' +
-        '<td><input type="text" class="sale_type"></td>' +
+        '<td><input type="text" class="sale_type" value="Heifer"></td>' +
         '<td><input type="number" class="sale_head" oninput="updateSaleRow(this)"></td>' +
         '<td><input type="number" class="sale_wt" oninput="updateSaleRow(this)"></td>' +
         '<td><input type="number" class="sale_price" step="0.01" oninput="updateSaleRow(this)"></td>' +
@@ -1785,192 +1820,202 @@
       const wt = Number(tr.querySelector('.sale_wt')?.value || 0);
       const price = Number(tr.querySelector('.sale_price')?.value || 0);
       const total = head * wt * price;
-      tr.querySelector('.sale_total_display').textContent = formatMoney(total);
+      tr.querySelector('.sale_total_display').textContent = formatNumber(total, 0);
       recalcSales();
     }
 
     function recalcSales() {
       function sum(bodyId) {
-        let s = 0;
+        let total = 0;
         document.querySelectorAll('#' + bodyId + ' .sale_total_display').forEach(span => {
-          const txt = span.textContent.replace(/[^0-9.-]/g, '');
-          s += Number(txt || 0);
+          const v = span.textContent.replace(/,/g, '');
+          total += Number(v || 0);
         });
-        return s;
+        return total;
       }
       const steer = sum('steer_sales_body');
       const heifer = sum('heifer_sales_body');
-      document.getElementById('total_steer_sales').textContent = formatMoney(steer);
-      document.getElementById('total_heifer_sales').textContent = formatMoney(heifer);
-      document.getElementById('combined_sales').textContent = formatMoney(steer + heifer);
+      document.getElementById('total_steer_sales').textContent = formatNumber(steer, 0);
+      document.getElementById('total_heifer_sales').textContent = formatNumber(heifer, 0);
+      document.getElementById('combined_sales').textContent = formatNumber(steer + heifer, 0);
     }
 
     function recalc() {
-      const bred = num('bred_cows');
-      const bredHeif = num('bred_heifers');
-      const replOpen = num('repl_heifers_open');
-      const dry = num('dry_cows');
-      const cull = num('cull_cows');
-      const other = num('other_cows');
+      const breedingFemales =
+        num('bred_cows') + num('bred_heifers') + num('repl_heifers_open') +
+        num('dry_cows') + num('cull_cows') + num('other_cows');
+      document.getElementById('kpi_breeding_females').textContent = formatNumber(breedingFemales, 0);
 
-      const breedingFemales = bred + bredHeif + replOpen;
-      document.getElementById('kpi_breeding_females').textContent = formatNumber(breedingFemales);
+      const cowBreeding = num('bulls_cow_breeding');
+      const cowRatio = num('bulls_cow_ratio') || 1;
+      const cowRequired = Math.ceil(cowBreeding / cowRatio);
+      const cowBackup = Math.ceil(cowRequired * (num('bulls_cow_backup_pct') || 0) / 100);
+      const cowTotal = cowRequired + cowBackup;
+      document.getElementById('bulls_cow_required').textContent = cowRequired;
+      document.getElementById('bulls_cow_backup').textContent = cowBackup;
+      document.getElementById('bulls_cow_total').textContent = cowTotal;
 
-      const bullRatio = num('bull_ratio') || 1;
-      const backupPct = num('backup_bulls_pct') / 100;
-      const requiredBulls = breedingFemales / bullRatio;
-      const backupBulls = requiredBulls * backupPct;
-      const totalBulls = requiredBulls + backupBulls;
-      document.getElementById('kpi_total_bulls').textContent = formatNumber(totalBulls);
+      const heiferBreeding = num('bulls_heifer_breeding');
+      const heiferRatio = num('bulls_heifer_ratio') || 1;
+      const heiferRequired = Math.ceil(heiferBreeding / heiferRatio);
+      const heiferBackup = Math.ceil(heiferRequired * (num('bulls_heifer_backup_pct') || 0) / 100);
+      const heiferTotal = heiferRequired + heiferBackup;
+      document.getElementById('bulls_heifer_required').textContent = heiferRequired;
+      document.getElementById('bulls_heifer_backup').textContent = heiferBackup;
+      document.getElementById('bulls_heifer_total').textContent = heiferTotal;
 
-      const weaningRate = num('weaning_rate') / 100;
-      const weanedCalves = breedingFemales * weaningRate;
-      document.getElementById('kpi_weaned_calves').textContent = formatNumber(weanedCalves);
+      const totalBulls = cowTotal + heiferTotal;
+      document.getElementById('bulls_total').textContent = totalBulls;
+      document.getElementById('kpi_total_bulls').textContent = totalBulls;
+
+      const bullTurnout = getDate('bull_turnout_date');
+      const bullBringIn = getDate('bull_bringin_date');
+      const bullDays = daysBetween(bullTurnout, bullBringIn);
+      document.getElementById('bull_days_out').textContent = bullDays ? bullDays + ' days' : '–';
+
+      const weaningRate = (num('weaning_rate') || 0) / 100;
+      const weaned = Math.round(breedingFemales * weaningRate);
+      document.getElementById('kpi_weaned_calves').textContent = formatNumber(weaned, 0);
+
+      const steerPct = (num('steer_pct') || 0) / 100;
+      const heiferPct = (num('heifer_pct') || 0) / 100;
+      const steers = Math.round(weaned * steerPct);
+      const heifers = Math.round(weaned * heiferPct);
+      const replKept = num('repl_heifers_kept');
+      const heifersAvailable = Math.max(0, heifers - replKept);
+      document.getElementById('calv_breeding_input').value = breedingFemales;
+      document.getElementById('calv_weaning_rate_input').value = num('weaning_rate');
+      document.getElementById('calv_steer_pct_input').value = num('steer_pct');
+      document.getElementById('calv_heifer_pct_input').value = num('heifer_pct');
+      document.getElementById('calv_repl_kept_input').value = replKept;
+      document.getElementById('calv_weaned').textContent = formatNumber(weaned, 0);
+      document.getElementById('calv_steers').textContent = formatNumber(steers, 0);
+      document.getElementById('calv_heifers').textContent = formatNumber(heifers, 0);
+      document.getElementById('calv_heifers_available').textContent = formatNumber(heifersAvailable, 0);
 
       const feedStart = getDate('feed_start');
       const feedEnd = getDate('feed_end');
-      const days = daysBetween(feedStart, feedEnd);
+      const feedDays = daysBetween(feedStart, feedEnd);
+      let hayTotalLb = 0;
+      hayTotalLb += (num('bred_cows') + num('dry_cows') + num('cull_cows') + num('other_cows')) * num('cow_intake') * feedDays;
+      hayTotalLb += (num('bred_heifers') + num('repl_heifers_open')) * num('heifer_intake') * feedDays;
+      hayTotalLb += totalBulls * num('bull_intake') * feedDays;
+      const shrink = (num('hay_waste') || 0) / 100;
+      hayTotalLb *= (1 + shrink);
+      const tons = hayTotalLb / 2000;
+      const hayCost = num('hay_cost') || 0;
+      const feedCost = tons * hayCost;
+      document.getElementById('kpi_winter_hay_tons').textContent = formatNumber(tons || 0, 0);
+      document.getElementById('kpi_winter_feed_cost').textContent = formatMoney(feedCost || 0);
 
-      const cowIntake = num('cow_intake');
-      const heiferIntake = num('heifer_intake');
-      const bullIntake = num('bull_intake');
-      const hayWaste = num('hay_waste') / 100;
-      const hayCost = num('hay_cost');
+      const blmTurnout = getDate('blm_turnout');
+      const blmPulloff = getDate('blm_pulloff');
+      const blmDays = daysBetween(blmTurnout, blmPulloff);
+      const blmMonths = blmDays / 30.4;
+      document.getElementById('blm_days').textContent = blmDays ? blmDays : '–';
+      document.getElementById('blm_months').textContent = blmMonths ? blmMonths.toFixed(1) : '–';
 
-      const cows = bred + dry + cull + other;
-      const heifers = bredHeif + replOpen;
-      const bulls = totalBulls;
-
-      const cowHay = cows * cowIntake * days;
-      const heiferHay = heifers * heiferIntake * days;
-      const bullHay = bulls * bullIntake * days;
-      let totalHayLb = cowHay + heiferHay + bullHay;
-      totalHayLb *= 1 + hayWaste;
-
-      const totalHayTons = totalHayLb / 2000;
-      document.getElementById('kpi_winter_hay_tons').textContent = formatNumber(totalHayTons);
-
-      const winterFeedCost = totalHayTons * hayCost;
-      document.getElementById('kpi_winter_feed_cost').textContent = formatMoney(winterFeedCost);
+      let permittedAums = 0;
+      document.querySelectorAll('.permit_aums').forEach(input => {
+        permittedAums += Number(input.value || 0);
+      });
+      document.getElementById('blm_total_permitted').textContent = formatNumber(permittedAums || 0, 0);
 
       const aumPerCow = num('aum_per_cow') || 1;
-      const months = days / 30.4;
-      const aumsRequired = cows * months * aumPerCow;
-      document.getElementById('kpi_aums_required').textContent = formatNumber(aumsRequired);
+      const aumsRequired = (breedingFemales + totalBulls) * aumPerCow * blmMonths;
+      document.getElementById('blm_aums_required').textContent = formatNumber(aumsRequired || 0, 0);
+      document.getElementById('blm_aums_remaining').textContent = formatNumber((permittedAums - aumsRequired) || 0, 0);
+      document.getElementById('kpi_aums_required').textContent = formatNumber(aumsRequired || 0, 0);
 
-      let blmPermitted = 0;
-      document.querySelectorAll('.permit_aums').forEach(input => {
-        blmPermitted += Number(input.value || 0);
-      });
-      document.getElementById('blm_total_permitted').textContent = formatNumber(blmPermitted);
-      document.getElementById('blm_aums_required').textContent = formatNumber(aumsRequired);
-      document.getElementById('blm_aums_remaining').textContent = formatNumber(blmPermitted - aumsRequired);
-
-      const turn = getDate('blm_turnout');
-      const pull = getDate('blm_pulloff');
-      const blmDays = daysBetween(turn, pull);
-      document.getElementById('blm_days').textContent = formatNumber(blmDays);
-      document.getElementById('blm_months').textContent = formatNumber(blmDays / 30.4, 1);
-
-      const bullTurn = getDate('bull_turnout_date');
-      const bullIn = getDate('bull_bringin_date');
-      const bullDays = daysBetween(bullTurn, bullIn);
-      document.getElementById('bull_days_out').textContent = formatNumber(bullDays);
-
-      const cowB = num('bulls_cow_breeding');
-      const cowR = num('bulls_cow_ratio') || 1;
-      const cowBackPct = num('bulls_cow_backup_pct') / 100;
-      const cowReq = cowB / cowR;
-      const cowBackup = cowReq * cowBackPct;
-      const cowTotal = cowReq + cowBackup;
-      document.getElementById('bulls_cow_required').textContent = formatNumber(cowReq);
-      document.getElementById('bulls_cow_backup').textContent = formatNumber(cowBackup);
-      document.getElementById('bulls_cow_total').textContent = formatNumber(cowTotal);
-
-      const heifB = num('bulls_heifer_breeding');
-      const heifR = num('bulls_heifer_ratio') || 1;
-      const heifBackPct = num('bulls_heifer_backup_pct') / 100;
-      const heifReq = heifB / heifR;
-      const heifBackup = heifReq * heifBackPct;
-      const heifTotal = heifReq + heifBackup;
-      document.getElementById('bulls_heifer_required').textContent = formatNumber(heifReq);
-      document.getElementById('bulls_heifer_backup').textContent = formatNumber(heifBackup);
-      document.getElementById('bulls_heifer_total').textContent = formatNumber(heifTotal);
-
-      document.getElementById('bulls_total').textContent = formatNumber(cowTotal + heifTotal);
-
-      const scenBody = document.getElementById('bulls_scenario_body');
-      scenBody.innerHTML = '';
-      [8, 10, 12, 15, 20].forEach(ratio => {
+      const scenarioBody = document.getElementById('bulls_scenario_body');
+      scenarioBody.innerHTML = '';
+      [10, 15, 20, 25].forEach(ratio => {
+        const bullsReq = Math.ceil(cowBreeding / ratio);
         const tr = document.createElement('tr');
-        const req = breedingFemales / ratio;
         tr.innerHTML =
           '<td>' + ratio + '</td>' +
-          '<td>' + formatNumber(req) + '</td>';
-        scenBody.appendChild(tr);
+          '<td>' + bullsReq + '</td>';
+        scenarioBody.appendChild(tr);
       });
-
-      const calvBreed = num('calv_breeding_input');
-      const calvWean = num('calv_weaning_rate_input') / 100;
-      const calvSteerPct = num('calv_steer_pct_input') / 100;
-      const calvHeifPct = num('calv_heifer_pct_input') / 100;
-      const calvReplKeep = num('calv_repl_kept_input');
-      const calvWeaned = calvBreed * calvWean;
-      const calvSteers = calvWeaned * calvSteerPct;
-      const calvHeifers = calvWeaned * calvHeifPct;
-      const calvHeifAvail = calvHeifers - calvReplKeep;
-      document.getElementById('calv_weaned').textContent = formatNumber(calvWeaned);
-      document.getElementById('calv_steers').textContent = formatNumber(calvSteers);
-      document.getElementById('calv_heifers').textContent = formatNumber(calvHeifers);
-      document.getElementById('calv_heifers_available').textContent = formatNumber(calvHeifAvail);
     }
 
-    // Cattle PDF export (unchanged; shortened for brevity in logic)
     function printAllCattleData() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
       const year = currentYearByTab.home;
-      let yPos = 20;
+      const w = window.open('', '', 'width=900,height=700');
+      w.document.write('<html><head><title>Grass Valley Ranch Cattle ' + year + '</title>');
+      w.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}h2{page-break-before:always;margin-top:20px;}table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button,input[type=file],.print-bar{display:none;}</style>');
+      w.document.write('</head><body>');
+      w.document.write('<h1>Grass Valley Ranch Cattle Records ' + year + '</h1>');
+      w.document.write(document.getElementById('r_inputs').innerHTML);
+      w.document.write(document.getElementById('r_allotments').innerHTML);
+      w.document.write(document.getElementById('r_bulls').innerHTML);
+      w.document.write(document.getElementById('r_calving').innerHTML);
+      w.document.write(document.getElementById('r_sales').innerHTML);
+      w.document.write(document.getElementById('r_blm').innerHTML);
+      w.document.write('</body></html>');
+      w.document.close();
+      w.focus();
+      w.print();
+    }
 
-      doc.setFontSize(18);
-      doc.text('Grass Valley Ranch – Cattle ' + year, 14, yPos);
+    async function exportCattleToPDF() {
+      const year = currentYearByTab.home;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      let yPos = 40;
+
+      doc.setFontSize(16);
+      doc.text('Grass Valley Ranch – Cattle ' + year, 40, yPos);
+      yPos += 20;
+
+      doc.setFontSize(12);
+      doc.text('Quick Stats', 40, yPos);
       yPos += 10;
 
-      const herdData = [
-        ['Bred cows', document.getElementById('bred_cows').value || ''],
-        ['Bred heifers', document.getElementById('bred_heifers').value || ''],
-        ['Replacement heifers (open)', document.getElementById('repl_heifers_open').value || ''],
-        ['Dry cows', document.getElementById('dry_cows').value || ''],
-        ['Cull cows', document.getElementById('cull_cows').value || ''],
-        ['Other cows', document.getElementById('other_cows').value || ''],
-      ];
-      doc.autoTable({
-        startY: yPos,
-        head: [['Herd category', 'Head']],
-        body: herdData,
-        theme: 'grid',
-        headStyles: { fillColor:[68,114,196] },
-        margin: { left:14 }
-      });
-      yPos = doc.lastAutoTable.finalY + 10;
-
       const quickStats = [
-        ['Breeding females', document.getElementById('kpi_breeding_females').textContent],
-        ['Total bulls to run', document.getElementById('kpi_total_bulls').textContent],
-        ['Expected weaned calves', document.getElementById('kpi_weaned_calves').textContent],
-        ['Winter hay (tons)', document.getElementById('kpi_winter_hay_tons').textContent],
-        ['Winter feed cost', document.getElementById('kpi_winter_feed_cost').textContent],
-        ['AUMs required', document.getElementById('kpi_aums_required').textContent],
+        ['Breeding females', document.getElementById('kpi_breeding_females').textContent || ''],
+        ['Total bulls to run', document.getElementById('kpi_total_bulls').textContent || ''],
+        ['Expected weaned calves', document.getElementById('kpi_weaned_calves').textContent || ''],
+        ['Winter hay (tons)', document.getElementById('kpi_winter_hay_tons').textContent || ''],
+        ['Winter feed cost', document.getElementById('kpi_winter_feed_cost').textContent || ''],
+        ['AUMs required', document.getElementById('kpi_aums_required').textContent || ''],
       ];
+
       doc.autoTable({
         startY: yPos,
-        head: [['Quick stat', 'Value']],
+        head: [['Metric', 'Value']],
         body: quickStats,
         theme: 'grid',
         headStyles: { fillColor:[68,114,196] },
-        margin: { left:14 }
+        margin: { left:40 }
       });
-      yPos = doc.lastAutoTable.finalY + 10;
+      yPos = doc.lastAutoTable.finalY + 20;
+
+      function addTableFromSelector(title, selector, columns) {
+        const rows = [];
+        document.querySelectorAll(selector).forEach(tr => {
+          const row = [];
+          columns.forEach(sel => {
+            const cell = tr.querySelector(sel);
+            row.push(cell ? (cell.value || cell.textContent || '') : '');
+          });
+          if (row.some(v => v && String(v).trim() !== '')) rows.push(row);
+        });
+        if (!rows.length) return;
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
+        doc.setFontSize(14);
+        doc.text(title, 40, yPos);
+        yPos += 10;
+        doc.autoTable({
+          startY: yPos,
+          body: rows,
+          theme: 'grid',
+          margin: { left:40 }
+        });
+        yPos = doc.lastAutoTable.finalY + 20;
+      }
+
+      addTableFromSelector('Herd Counts', '#r_inputs .section:nth-of-type(1) input', ['#bred_cows','#bred_heifers','#repl_heifers_open','#dry_cows','#cull_cows','#other_cows']);
 
       const bullsBought = [];
       document.querySelectorAll('#bulls_bought_body tr').forEach(tr => {
@@ -1985,19 +2030,19 @@
       });
 
       if (bullsBought.length) {
-        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
         doc.setFontSize(14);
-        doc.text('Bulls Bought', 14, yPos);
-        yPos += 8;
+        doc.text('Bulls Bought', 40, yPos);
+        yPos += 10;
         doc.autoTable({
           startY: yPos,
           head: [['Date','Number','Price/head','Location','Notes']],
           body: bullsBought,
           theme: 'grid',
           headStyles: { fillColor:[68,114,196] },
-          margin: { left:14 }
+          margin: { left:40 }
         });
-        yPos = doc.lastAutoTable.finalY + 10;
+        yPos = doc.lastAutoTable.finalY + 20;
       }
 
       const steerSales = [];
@@ -2015,19 +2060,19 @@
       });
 
       if (steerSales.length) {
-        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
         doc.setFontSize(14);
-        doc.text('Steer Sales', 14, yPos);
-        yPos += 8;
+        doc.text('Steer Sales', 40, yPos);
+        yPos += 10;
         doc.autoTable({
           startY: yPos,
           head: [['Date','Lot/Tag','Type','Head','Avg wt','Price','Total']],
           body: steerSales,
           theme: 'grid',
           headStyles: { fillColor:[68,114,196] },
-          margin: { left:14 }
+          margin: { left:40 }
         });
-        yPos = doc.lastAutoTable.finalY + 10;
+        yPos = doc.lastAutoTable.finalY + 20;
       }
 
       const heiferSales = [];
@@ -2045,19 +2090,19 @@
       });
 
       if (heiferSales.length) {
-        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
         doc.setFontSize(14);
-        doc.text('Heifer Sales', 14, yPos);
-        yPos += 8;
+        doc.text('Heifer Sales', 40, yPos);
+        yPos += 10;
         doc.autoTable({
           startY: yPos,
           head: [['Date','Lot/Tag','Type','Head','Avg wt','Price','Total']],
           body: heiferSales,
           theme: 'grid',
           headStyles: { fillColor:[68,114,196] },
-          margin: { left:14 }
+          margin: { left:40 }
         });
-        yPos = doc.lastAutoTable.finalY + 10;
+        yPos = doc.lastAutoTable.finalY + 20;
       }
 
       doc.save('GVRCattle_' + year + '.pdf');
@@ -2192,81 +2237,92 @@
       const data = gatherAllData();
       localStorage.setItem('gvr_farm_' + currentYear, JSON.stringify(data));
       recalcFinancialTotals();
-      document.getElementById('homeYearDisplay').textContent = currentYear;
+      recalcLoadRecordsTotals();
     }
 
     function loadAll() {
       document.getElementById('homeYearDisplay').textContent = currentYear;
-
-      ['yield1','yield2','yield3'].forEach(group => {
-        document.querySelectorAll('[data-group="' + group + '"]').forEach(input => { input.value = ''; });
-      });
-      ['fertilizer','diesel','twine','seed','equipmentcost','mechanic','equipmentpurchases','pivot','tires','sprinklers'].forEach(cat => {
-        const tbody = document.querySelector('#inputs_' + cat + '_table tbody');
-        tbody.innerHTML = '';
-      });
-      document.getElementById('haysales_body').innerHTML = '';
-      document.getElementById('loadrecords_body').innerHTML = '';
-      document.getElementById('logbook_body').innerHTML = '';
-
       const raw = localStorage.getItem('gvr_farm_' + currentYear);
       if (!raw) {
-        initDefaultFarmRows();
+        document.querySelectorAll('[data-group^="yield"]').forEach(input => input.value = '');
+        document.querySelectorAll('[data-group="inputs_notes"],[data-group="hay_notes"],[data-group="loadrecords_notes"],[data-group="logbook_notes"]').forEach(t => t.value = '');
+        document.getElementById('haysales_body').innerHTML = '';
+        document.getElementById('loadrecords_body').innerHTML = '';
+        document.getElementById('logbook_body').innerHTML = '';
+        ['fertilizer','diesel','twine','seed','equipmentcost','mechanic','equipmentpurchases','pivot','tires','sprinklers'].forEach(cat => {
+          const body = document.querySelector('#inputs_' + cat + '_table tbody');
+          body.innerHTML = '';
+        });
+        addHaySaleRow();
+        addLoadRecordRow();
+        addLogbookRow();
         recalcFinancialTotals();
+        recalcLoadRecordsTotals();
         return;
       }
+
       let data;
-      try { data = JSON.parse(raw); } catch {
-        initDefaultFarmRows();
-        recalcFinancialTotals();
-        return;
-      }
+      try { data = JSON.parse(raw); } catch { return; }
 
       ['yield1','yield2','yield3'].forEach(group => {
-        const g = data.yields && data.yields[group] ? data.yields[group] : {};
-        Object.keys(g).forEach(field => {
-          const entry = g[field];
-          Object.keys(entry).forEach(type => {
-            const sel = '[data-group="' + group + '"][data-field="' + field + '"][data-type="' + type + '"]';
-            const input = document.querySelector(sel);
-            if (input) input.value = entry[type];
-          });
+        const groupData = data.yields && data.yields[group] ? data.yields[group] : {};
+        document.querySelectorAll('[data-group="' + group + '"]').forEach(input => {
+          const field = input.dataset.field;
+          const type = input.dataset.type;
+          if (!field || !type) return;
+          const val = groupData[field] && groupData[field][type] !== undefined ? groupData[field][type] : '';
+          input.value = val;
         });
       });
 
-      if (data.inputs && data.inputs.subRows) {
-        Object.keys(data.inputs.subRows).forEach(cat => {
-          const rows = data.inputs.subRows[cat] || [];
-          rows.forEach(row => addInputSubRow(cat, row));
-        });
-      }
+      ['inputs_notes','hay_notes','loadrecords_notes','logbook_notes'].forEach(group => {
+        const el = document.querySelector('[data-group="' + group + '"][data-field="general"]');
+        if (el && data[group]) el.value = data[group];
+      });
 
-      (data.hay || []).forEach(row => addHaySaleRow(row));
-      (data.loadRecords || []).forEach(row => addLoadRecordRow(row));
-      (data.logbook || []).forEach(row => addLogbookRow(row));
-
-      initDefaultFarmRows(false);
-      recalcFinancialTotals();
-    }
-
-    function initDefaultFarmRows(addMissing = true) {
       ['fertilizer','diesel','twine','seed','equipmentcost','mechanic','equipmentpurchases','pivot','tires','sprinklers'].forEach(cat => {
-        const tbody = document.querySelector('#inputs_' + cat + '_table tbody');
-        if (!tbody) return;
-        if (!tbody.children.length && addMissing) {
+        const body = document.querySelector('#inputs_' + cat + '_table tbody');
+        body.innerHTML = '';
+        const rows = (data.inputs && data.inputs.subRows && data.inputs.subRows[cat]) || [];
+        if (!rows.length) {
           addInputSubRow(cat);
+        } else {
+          rows.forEach(row => {
+            addInputSubRow(cat, row);
+          });
         }
       });
+
       const hayBody = document.getElementById('haysales_body');
-      if (!hayBody.children.length && addMissing) addHaySaleRow();
+      hayBody.innerHTML = '';
+      if (data.hay && data.hay.length) {
+        data.hay.forEach(row => addHaySaleRow(row));
+      } else {
+        addHaySaleRow();
+      }
+
       const loadBody = document.getElementById('loadrecords_body');
-      if (!loadBody.children.length && addMissing) addLoadRecordRow();
+      loadBody.innerHTML = '';
+      if (data.loadRecords && data.loadRecords.length) {
+        data.loadRecords.forEach(row => addLoadRecordRow(row));
+      } else {
+        addLoadRecordRow();
+      }
+
       const logBody = document.getElementById('logbook_body');
-      if (!logBody.children.length && addMissing) addLogbookRow();
+      logBody.innerHTML = '';
+      if (data.logbook && data.logbook.length) {
+        data.logbook.forEach(row => addLogbookRow(row));
+      } else {
+        addLogbookRow();
+      }
+
+      recalcFinancialTotals();
+      recalcLoadRecordsTotals();
     }
 
     function addInputSubRow(category, rowData) {
-      const tbody = document.querySelector('#inputs_' + category + '_table tbody');
+      const body = document.querySelector('#inputs_' + category + '_table tbody');
       const r = rowData || {};
       const tr = document.createElement('tr');
       tr.innerHTML =
@@ -2275,7 +2331,7 @@
         '<td><input type="text" class="input_sub_notes" data-group="inputssub" data-category="' + category + '" data-type="notes" value="' + (r.notes || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="file" accept="image/*,.pdf,.doc,.docx" onchange="previewNotesFiles(this);saveAll()"><div class="notes_preview"></div></td>' +
         '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll();">🗑</button></td>';
-      tbody.appendChild(tr);
+      body.appendChild(tr);
     }
 
     function addHaySaleRow(rowData) {
@@ -2287,4 +2343,317 @@
         '<td><input type="text" class="hay_buyer" value="' + (r.buyer || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="text" class="hay_crop" value="' + (r.crop || '') + '" oninput="saveAll()"></td>' +
         '<td><input type="number" class="hay_units" value="' + (r.units || '') + '" oninput="updateHayRowFarm(this); saveAll()"></td>' +
-        '<td><input type="number" class="hay_price" step="0.
+        '<td><input type="number" class="hay_price" step="0.01" value="' + (r.price || '') + '" oninput="updateHayRowFarm(this); saveAll()"></td>' +
+        '<td><span class="hay_total">' + (r.total || '0') + '</span></td>' +
+        '<td>' +
+          '<input type="file" accept="image/*" class="hay_img_input" onchange="previewImage(this);saveAll()">' +
+          '<img class="img-preview" style="display:none;">' +
+          '<input type="text" class="hay_notes" placeholder="Notes" value="' + (r.notes || '') + '" oninput="saveAll()">' +
+        '</td>' +
+        '<td>' +
+          '<input type="file" accept="image/*,.pdf,.doc,.docx" class="hay_load_ticket" onchange="previewNotesFiles(this);saveAll()">' +
+          '<div class="notes_preview"></div>' +
+        '</td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); recalcHaySalesFarm(); saveAll();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function updateHayRowFarm(el) {
+      const tr = el.closest('tr');
+      const units = Number(tr.querySelector('.hay_units').value || 0);
+      const price = Number(tr.querySelector('.hay_price').value || 0);
+      const total = units * price;
+      tr.querySelector('.hay_total').textContent = formatMoney(total);
+      recalcHaySalesFarm();
+    }
+
+    function recalcHaySalesFarm() {
+      const rows = document.querySelectorAll('#haysales_body tr');
+      let sum = 0;
+      rows.forEach(tr => {
+        const units = Number(tr.querySelector('.hay_units')?.value || 0);
+        const price = Number(tr.querySelector('.hay_price')?.value || 0);
+        sum += units * price;
+      });
+      document.getElementById('haysales_total').textContent = rows.length ? formatMoney(sum) : '0';
+    }
+
+    function addLoadRecordRow(rowData) {
+      const body = document.getElementById('loadrecords_body');
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" class="load_date" value="' + (r.date || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
+        '<td><input type="text" class="load_cutting" value="' + (r.cutting || '') + '" placeholder="e.g. 1st, 2nd" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
+        '<td><input type="text" class="load_field" value="' + (r.field || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
+        '<td><input type="number" class="load_bales" value="' + (r.bales || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
+        '<td><input type="text" class="load_notes" value="' + (r.notes || '') + '" oninput="saveAll();recalcLoadRecordsTotals()"></td>' +
+        '<td><input type="file" accept="image/*,.pdf,.doc,.docx" onchange="previewNotesFiles(this);saveAll()"><div class="notes_preview"></div></td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll(); recalcLoadRecordsTotals();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function recalcLoadRecordsTotals() {
+      const rows = document.querySelectorAll('#loadrecords_body tr');
+      let loadCount = 0;
+      let totalBales = 0;
+      rows.forEach(tr => {
+        const date = tr.querySelector('.load_date')?.value;
+        const cutting = tr.querySelector('.load_cutting')?.value;
+        const field = tr.querySelector('.load_field')?.value;
+        const balesVal = tr.querySelector('.load_bales')?.value;
+        if (date || cutting || field || balesVal) {
+          loadCount += 1;
+          totalBales += Number(balesVal || 0);
+        }
+      });
+      document.getElementById('loadrecords_count').textContent = loadCount;
+      document.getElementById('loadrecords_bales').textContent = totalBales;
+    }
+
+    function addLogbookRow(rowData) {
+      const body = document.getElementById('logbook_body');
+      const r = rowData || {};
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><input type="date" value="' + (r.date || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.field || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.event || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.washed || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.input || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="number" value="' + (r.harvest || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.crop || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.location || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="text" value="' + (r.notes || '') + '" oninput="saveAll()"></td>' +
+        '<td><input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="previewNotesFiles(this);saveAll()"><div class="notes_preview"></div></td>' +
+        '<td><button class="small-btn" onclick="this.parentElement.parentElement.remove(); saveAll();">🗑</button></td>';
+      body.appendChild(tr);
+    }
+
+    function recalcFinancialTotals() {
+      let income = 0;
+      document.querySelectorAll('#haysales_body tr').forEach(tr => {
+        const units = Number(tr.querySelector('.hay_units')?.value || 0);
+        const price = Number(tr.querySelector('.hay_price')?.value || 0);
+        income += units * price;
+      });
+
+      function sumCategory(category) {
+        let total = 0;
+        document.querySelectorAll('.input_sub_amount[data-category="' + category + '"]').forEach(input => {
+          total += Number(input.value || 0);
+        });
+        return total;
+      }
+
+      const exp_fertilizer = sumCategory('fertilizer');
+      const exp_diesel = sumCategory('diesel');
+      const exp_twine = sumCategory('twine');
+      const exp_seed = sumCategory('seed');
+      const exp_equipmentcost = sumCategory('equipmentcost');
+      const exp_mechanic = sumCategory('mechanic');
+      const exp_equipmentpurchases = sumCategory('equipmentpurchases');
+      const exp_pivot = sumCategory('pivot');
+      const exp_tires = sumCategory('tires');
+      const exp_sprinklers = sumCategory('sprinklers');
+
+      const nonPivotTotal =
+        exp_fertilizer + exp_diesel + exp_twine + exp_seed +
+        exp_equipmentcost + exp_mechanic + exp_equipmentpurchases +
+        exp_tires + exp_sprinklers;
+
+      const totalExpenses = nonPivotTotal + exp_pivot;
+      const net = income - totalExpenses;
+
+      function money(x) {
+        return x.toLocaleString(undefined, {maximumFractionDigits: 0});
+      }
+
+      document.getElementById('total_income').textContent = money(income);
+      document.getElementById('total_expenses').textContent = money(totalExpenses);
+      document.getElementById('net_income').textContent = money(net);
+
+      document.getElementById('exp_fertilizer').textContent = money(exp_fertilizer);
+      document.getElementById('exp_diesel').textContent = money(exp_diesel);
+      document.getElementById('exp_twine').textContent = money(exp_twine);
+      document.getElementById('exp_seed').textContent = money(exp_seed);
+      document.getElementById('exp_equipmentcost').textContent = money(exp_equipmentcost);
+      document.getElementById('exp_mechanic').textContent = money(exp_mechanic);
+      document.getElementById('exp_equipmentpurchases').textContent = money(exp_equipmentpurchases);
+      document.getElementById('exp_pivot').textContent = money(exp_pivot);
+      document.getElementById('exp_tires').textContent = money(exp_tires);
+      document.getElementById('exp_sprinklers').textContent = money(exp_sprinklers);
+    }
+
+    async function exportYearToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      let yPos = 40;
+
+      doc.setFontSize(16);
+      doc.text('Grass Valley Ranch – Farming ' + currentYear, 40, yPos);
+      yPos += 20;
+
+      recalcFinancialTotals();
+      const income = document.getElementById('total_income').textContent || '0';
+      const expenses = document.getElementById('total_expenses').textContent || '0';
+      const net = document.getElementById('net_income').textContent || '0';
+
+      doc.setFontSize(12);
+      doc.text('Summary', 40, yPos);
+      yPos += 10;
+      doc.autoTable({
+        startY: yPos,
+        head: [['Metric','Value']],
+        body: [
+          ['Total income (hay)', income],
+          ['Total expenses', expenses],
+          ['Net (income - expenses)', net],
+        ],
+        theme: 'grid',
+        headStyles: { fillColor:[68,114,196] },
+        margin: { left:40 }
+      });
+      yPos = doc.lastAutoTable.finalY + 20;
+
+      function rowsFromSelector(selector, columns) {
+        const rows = [];
+        document.querySelectorAll(selector).forEach(tr => {
+          const row = [];
+          columns.forEach(sel => {
+            const cell = tr.querySelector(sel);
+            row.push(cell ? (cell.value || cell.textContent || '') : '');
+          });
+          if (row.some(v => v && String(v).trim() !== '')) rows.push(row);
+        });
+        return rows;
+      }
+
+      const hayRows = [];
+      document.querySelectorAll('#haysales_body tr').forEach(tr => {
+        const date = tr.querySelector('.hay_date')?.value || '';
+        const buyer = tr.querySelector('.hay_buyer')?.value || '';
+        const crop = tr.querySelector('.hay_crop')?.value || '';
+        const units = tr.querySelector('.hay_units')?.value || '';
+        const price = tr.querySelector('.hay_price')?.value || '';
+        const total = tr.querySelector('.hay_total')?.textContent || '';
+        if (date || buyer || crop || units || price) {
+          hayRows.push([date,buyer,crop,units,price,total]);
+        }
+      });
+
+      if (hayRows.length) {
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
+        doc.setFontSize(14);
+        doc.text('Hay Sales', 40, yPos);
+        yPos += 10;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date','Buyer','Crop','Units','Price','Total']],
+          body: hayRows,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:40 }
+        });
+        yPos = doc.lastAutoTable.finalY + 20;
+      }
+
+      const loadRows = [];
+      document.querySelectorAll('#loadrecords_body tr').forEach(tr => {
+        const date = tr.querySelector('.load_date')?.value || '';
+        const cutting = tr.querySelector('.load_cutting')?.value || '';
+        const field = tr.querySelector('.load_field')?.value || '';
+        const bales = tr.querySelector('.load_bales')?.value || '';
+        const notes = tr.querySelector('.load_notes')?.value || '';
+        if (date || cutting || field || bales || notes) {
+          loadRows.push([date,cutting,field,bales,notes]);
+        }
+      });
+
+      if (loadRows.length) {
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
+        doc.setFontSize(14);
+        doc.text('Load Records', 40, yPos);
+        yPos += 10;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date','Cutting','Field','Bales','Notes']],
+          body: loadRows,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:40 }
+        });
+        yPos = doc.lastAutoTable.finalY + 20;
+      }
+
+      const inputRows = [];
+      ['fertilizer','diesel','twine','seed','equipmentcost','mechanic','equipmentpurchases','pivot','tires','sprinklers'].forEach(cat => {
+        document.querySelectorAll('#inputs_' + cat + '_table tbody tr').forEach(tr => {
+          const name = tr.querySelector('.input_sub_name')?.value || '';
+          const amt = tr.querySelector('.input_sub_amount')?.value || '';
+          const notes = tr.querySelector('.input_sub_notes')?.value || '';
+          if (name || amt || notes) {
+            inputRows.push([cat, name, amt, notes]);
+          }
+        });
+      });
+
+      if (inputRows.length) {
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
+        doc.setFontSize(14);
+        doc.text('Inputs', 40, yPos);
+        yPos += 10;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Category','Subcategory','Amount','Notes']],
+          body: inputRows,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:40 }
+        });
+        yPos = doc.lastAutoTable.finalY + 20;
+      }
+
+      const logRows = [];
+      document.querySelectorAll('#logbook_body tr').forEach(tr => {
+        const cells = Array.from(tr.querySelectorAll('td input')).map(i => i.value || '');
+        if (cells.some(v => v && String(v).trim() !== '')) {
+          logRows.push(cells.slice(0,9));
+        }
+      });
+
+      if (logRows.length) {
+        if (yPos > 700) { doc.addPage(); yPos = 40; }
+        doc.setFontSize(14);
+        doc.text('Organic Tilth Logbook', 40, yPos);
+        yPos += 10;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date','Field','Event','Washed','Input','Harvest','Crop','Location','Notes']],
+          body: logRows,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:40 }
+        });
+        yPos = doc.lastAutoTable.finalY + 20;
+      }
+
+      doc.save('GVRFarming_' + currentYear + '.pdf');
+      alert('Farming PDF exported.');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initYearDropdown();
+      loadAll();
+      loadTabYear('inputs', currentYearByTab.inputs);
+      loadTabYear('allotments', currentYearByTab.allotments);
+      loadTabYear('bulls', currentYearByTab.bulls);
+      loadTabYear('calving', currentYearByTab.calving);
+      loadTabYear('sales', currentYearByTab.sales);
+      loadTabYear('blm', currentYearByTab.blm);
+      recalc();
+      recalcSales();
+    });
+  </script>
+</body>
+</html>
