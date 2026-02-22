@@ -1,10 +1,17 @@
+Here is the full updated `index.html` with your requested changes:
+
+- Cattle Management home: buttons are now “Print All Data” and “Export to PDF”.
+- The old “Export All Data (JSON)” button is removed.
+- Farming & Hay home: “Export Year Data (JSON)” button is removed; only “Print All Data” and “Export to PDF” remain. [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/169327967/bf0a2e19-ec73-4c67-8858-db80fc0c788e/paste.txt)
+
+```html
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>Grass Valley Ranch – Apps</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- jsPDF for Farming export (used in farming section) -->
+  <!-- jsPDF for Farming and Cattle export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
@@ -124,7 +131,7 @@
       min-width: 100px;
     }
 
-    /* Farming: home actions + summary */
+    /* Home actions + summary (used in both apps) */
     .home-actions {
       display:flex;
       gap:10px;
@@ -183,15 +190,15 @@
   <div id="home_screen" class="app-screen active">
     <div class="section">
       <h2>Welcome</h2>
-      <p>Use the buttons above to open either the ranch management app or the farming/hay app.</p>
+      <p>Use the buttons above to open either the cattle management app or the farming/hay app.</p>
       <p>All data is stored locally in your browser using per‑year records; you can print or save to PDF from inside each app’s tabs.</p>
     </div>
   </div>
 
-  <!-- RANCH APP (from paste-2.txt, slightly renamed outer ids) -->
+  <!-- CATTLE MANAGEMENT APP -->
   <div id="ranch_screen" class="app-screen">
     <h1>Grass Valley Ranch</h1>
-    <div>Working Ranch Model – Interactive App</div>
+    <div>Cattle Management – Interactive App</div>
 
     <div class="tabs">
       <div class="tab active" data-tab="r_home">Home</div>
@@ -203,7 +210,7 @@
       <div class="tab" data-tab="r_blm">BLM / AUM</div>
     </div>
 
-    <!-- HOME / DASHBOARD -->
+    <!-- CATTLE HOME / DASHBOARD -->
     <div id="r_home" class="tabcontent active">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('r_home')">Print</button>
@@ -236,9 +243,18 @@
         <div class="kpi">Winter feed cost: <span id="kpi_winter_feed_cost">–</span></div>
         <div class="kpi">AUMs required: <span id="kpi_aums_required">–</span></div>
       </div>
+
+      <div class="section">
+        <h2>All Data – This Year</h2>
+        <p>These actions use the current cattle year shown above.</p>
+        <div class="home-actions">
+          <button class="secondary" onclick="printAllCattleData()">Print All Data</button>
+          <button class="tertiary" onclick="exportCattleToPDF()">Export to PDF</button>
+        </div>
+      </div>
     </div>
 
-    <!-- INPUTS -->
+    <!-- CATTLE INPUTS -->
     <div id="r_inputs" class="tabcontent">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('r_inputs')">Print</button>
@@ -664,7 +680,7 @@
     </div>
   </div>
 
-  <!-- FARMING APP (from paste.txt) -->
+  <!-- FARMING APP -->
   <div id="farm_screen" class="app-screen">
     <h1>Grass Valley Ranch Farming</h1>
     <div>Crop yields, inputs, hay sales, load records, and organic tilth logbook</div>
@@ -684,7 +700,7 @@
       <div class="tab" data-tab="f_logbook">Organic Tilth Logbook</div>
     </div>
 
-    <!-- HOME -->
+    <!-- FARMING HOME (Export Year JSON removed) -->
     <div id="f_home" class="tabcontent active">
       <div class="section">
         <h2>Home Year Overview</h2>
@@ -696,7 +712,6 @@
           <p><strong>Net (Income - Expenses)</strong>: <span id="net_income">0</span></p>
         </div>
         <div class="home-actions">
-          <button onclick="exportYearToJSON()">Export Year Data (JSON)</button>
           <button class="secondary" onclick="printAllData()">Print All Data</button>
           <button class="tertiary" onclick="exportYearToPDF()">Export to PDF</button>
         </div>
@@ -735,7 +750,7 @@
       </div>
     </div>
 
-    <!-- CROP YIELDS -->
+    <!-- FARMING CROP YIELDS -->
     <div id="f_yields" class="tabcontent">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('f_yields')">Print</button>
@@ -755,7 +770,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- group yield1 -->
             <tr>
               <td>13</td>
               <td><input type="number" data-group="yield1" data-field="13" data-type="tons" oninput="saveAll()"></td>
@@ -842,8 +856,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- group yield2, same fields -->
-            <!-- 13 -->
             <tr>
               <td>13</td>
               <td><input type="number" data-group="yield2" data-field="13" data-type="tons" oninput="saveAll()"></td>
@@ -853,7 +865,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 14 -->
             <tr>
               <td>14</td>
               <td><input type="number" data-group="yield2" data-field="14" data-type="tons" oninput="saveAll()"></td>
@@ -863,7 +874,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 15 -->
             <tr>
               <td>15</td>
               <td><input type="number" data-group="yield2" data-field="15" data-type="tons" oninput="saveAll()"></td>
@@ -873,7 +883,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 16 -->
             <tr>
               <td>16</td>
               <td><input type="number" data-group="yield2" data-field="16" data-type="tons" oninput="saveAll()"></td>
@@ -883,7 +892,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 17 -->
             <tr>
               <td>17</td>
               <td><input type="number" data-group="yield2" data-field="17" data-type="tons" oninput="saveAll()"></td>
@@ -893,7 +901,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 8A -->
             <tr>
               <td>8A</td>
               <td><input type="number" data-group="yield2" data-field="8A" data-type="tons" oninput="saveAll()"></td>
@@ -903,7 +910,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- 8B -->
             <tr>
               <td>8B</td>
               <td><input type="number" data-group="yield2" data-field="8B" data-type="tons" oninput="saveAll()"></td>
@@ -913,7 +919,6 @@
                 <div class="notes_preview"></div>
               </td>
             </tr>
-            <!-- Huntfield -->
             <tr>
               <td>Huntfield</td>
               <td><input type="number" data-group="yield2" data-field="Huntfield" data-type="tons" oninput="saveAll()"></td>
@@ -937,7 +942,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- group yield3, same fields pattern -->
             <tr>
               <td>13</td>
               <td><input type="number" data-group="yield3" data-field="13" data-type="tons" oninput="saveAll()"></td>
@@ -1022,7 +1026,7 @@
       </div>
     </div>
 
-    <!-- INPUTS WITH SUBCATEGORIES -->
+    <!-- FARMING INPUTS WITH SUBCATEGORIES -->
     <div id="f_inputs" class="tabcontent">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('f_inputs')">Print</button>
@@ -1130,7 +1134,7 @@
       </div>
     </div>
 
-    <!-- HAY SALES -->
+    <!-- FARMING HAY SALES -->
     <div id="f_haysales" class="tabcontent">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('f_haysales')">Print</button>
@@ -1170,7 +1174,7 @@
       </div>
     </div>
 
-    <!-- LOAD RECORDS -->
+    <!-- FARMING LOAD RECORDS -->
     <div id="f_loadrecords" class="tabcontent">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('f_loadrecords')">Print</button>
@@ -1209,7 +1213,7 @@
       </div>
     </div>
 
-    <!-- ORGANIC TILTH LOGBOOK -->
+    <!-- FARMING LOGBOOK -->
     <div id="f_logbook" class="tabcontent">
       <div class="print-bar">
         <button class="small-btn" onclick="printInnerTab('f_logbook')">Print</button>
@@ -1300,7 +1304,7 @@
     }
 
     // =====================================================================
-    // RANCH APP JS (unchanged logic, just uses r_* tab ids)
+    // CATTLE MANAGEMENT JS
     // =====================================================================
     const currentYearByTab = {
       home: '2026',
@@ -1356,7 +1360,7 @@
       document.querySelectorAll('#allotment_body tr').forEach(tr => {
         const tds = tr.querySelectorAll('td input');
         if (tds.length === 2) {
-          rows.push({ name: tds[0].value, head: tds[1].value });
+          rows.push({ name: tds[0].value, head: tds [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/169327967/bf0a2e19-ec73-4c67-8858-db80fc0c788e/paste.txt).value });
         }
       });
       localStorage.setItem(storageKey('allotments', year) + '_rows', JSON.stringify(rows));
@@ -1608,7 +1612,7 @@
       if (tabId === 'sales') loadSales(year);
     }
 
-    // Ranch tab switching
+    // Cattle tab switching
     document.querySelectorAll('#ranch_screen .tab').forEach(tab => {
       tab.addEventListener('click', () => {
         const id = tab.dataset.tab;
@@ -1935,8 +1939,146 @@
       document.getElementById('blm_aums_remaining').textContent = formatNumber(aumsRemaining, 0);
     }
 
+    // CATTLE: PRINT ALL DATA & EXPORT TO PDF
+    function printAllCattleData() {
+      const year = currentYearByTab.home || '2026';
+      const w = window.open('', '', 'width=900,height=700');
+      w.document.write('<html><head><title>Cattle Management ' + year + '</title>');
+      w.document.write('<style>body{font-family:Arial,sans-serif;margin:8px;}h2{page-break-before:always;margin-top:20px;}table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0;}th,td{border:1px solid #ccc;padding:4px;text-align:left;}th{background:#eee;}button,input[type=file],.print-bar{display:none;}</style>');
+      w.document.write('</head><body>');
+      w.document.write('<h1>Grass Valley Ranch – Cattle Management ' + year + '</h1>');
+      w.document.write(document.getElementById('r_inputs').innerHTML);
+      w.document.write(document.getElementById('r_allotments').innerHTML);
+      w.document.write(document.getElementById('r_bulls').innerHTML);
+      w.document.write(document.getElementById('r_calving').innerHTML);
+      w.document.write(document.getElementById('r_sales').innerHTML);
+      w.document.write(document.getElementById('r_blm').innerHTML);
+      w.document.write('</body></html>');
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    function exportCattleToPDF() {
+      const jsPDF = window.jspdf;
+      if (!jsPDF) {
+        alert('PDF library not loaded.');
+        return;
+      }
+      const year = currentYearByTab.home || '2026';
+      const doc = new jsPDF.jsPDF();
+
+      doc.setFontSize(18);
+      doc.text('Grass Valley Ranch - Cattle Management', 14, 20);
+      doc.setFontSize(12);
+      doc.text('Year ' + year, 14, 28);
+
+      let yPos = 40;
+
+      doc.text('Quick Summary', 14, yPos);
+      yPos += 8;
+      doc.text('Breeding females: ' + (document.getElementById('kpi_breeding_females').textContent || '-'), 14, yPos); yPos += 6;
+      doc.text('Total bulls to run: ' + (document.getElementById('kpi_total_bulls').textContent || '-'), 14, yPos); yPos += 6;
+      doc.text('Expected weaned calves: ' + (document.getElementById('kpi_weaned_calves').textContent || '-'), 14, yPos); yPos += 6;
+      doc.text('Winter hay (tons): ' + (document.getElementById('kpi_winter_hay_tons').textContent || '-'), 14, yPos); yPos += 6;
+      doc.text('Winter feed cost: ' + (document.getElementById('kpi_winter_feed_cost').textContent || '-'), 14, yPos); yPos += 6;
+      doc.text('AUMs required: ' + (document.getElementById('kpi_aums_required').textContent || '-'), 14, yPos);
+      yPos += 12;
+
+      const bullsBought = [];
+      document.querySelectorAll('#bulls_bought_body tr').forEach(tr => {
+        const date = tr.querySelector('.bull_date')?.value || '';
+        const num = tr.querySelector('.bull_num')?.value || '';
+        const price = tr.querySelector('.bull_price')?.value || '';
+        const loc = tr.querySelector('.bull_location')?.value || '';
+        const notes = tr.querySelector('.bull_notes')?.value || '';
+        if (date || num || price || loc || notes) {
+          bullsBought.push([date, num, price, loc, notes]);
+        }
+      });
+
+      if (bullsBought.length) {
+        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text('Bulls Bought', 14, yPos);
+        yPos += 8;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date','Number','Price/head','Location','Notes']],
+          body: bullsBought,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:14 }
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      const steerSales = [];
+      document.querySelectorAll('#steer_sales_body tr').forEach(tr => {
+        const date = tr.querySelector('.sale_date')?.value || '';
+        const lot = tr.querySelector('.sale_lot')?.value || '';
+        const type = tr.querySelector('.sale_type')?.value || '';
+        const head = tr.querySelector('.sale_head')?.value || '';
+        const wt = tr.querySelector('.sale_wt')?.value || '';
+        const price = tr.querySelector('.sale_price')?.value || '';
+        const total = tr.querySelector('.sale_total_display')?.textContent || '';
+        if (date || lot || head || wt || price) {
+          steerSales.push([date, lot, type, head, wt, price, total]);
+        }
+      });
+
+      if (steerSales.length) {
+        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text('Steer Sales', 14, yPos);
+        yPos += 8;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date','Lot/Tag','Type','Head','Avg wt','Price','Total']],
+          body: steerSales,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:14 }
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      const heiferSales = [];
+      document.querySelectorAll('#heifer_sales_body tr').forEach(tr => {
+        const date = tr.querySelector('.sale_date')?.value || '';
+        const lot = tr.querySelector('.sale_lot')?.value || '';
+        const type = tr.querySelector('.sale_type')?.value || '';
+        const head = tr.querySelector('.sale_head')?.value || '';
+        const wt = tr.querySelector('.sale_wt')?.value || '';
+        const price = tr.querySelector('.sale_price')?.value || '';
+        const total = tr.querySelector('.sale_total_display')?.textContent || '';
+        if (date || lot || head || wt || price) {
+          heiferSales.push([date, lot, type, head, wt, price, total]);
+        }
+      });
+
+      if (heiferSales.length) {
+        if (yPos > 250) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text('Heifer Sales', 14, yPos);
+        yPos += 8;
+        doc.autoTable({
+          startY: yPos,
+          head: [['Date','Lot/Tag','Type','Head','Avg wt','Price','Total']],
+          body: heiferSales,
+          theme: 'grid',
+          headStyles: { fillColor:[68,114,196] },
+          margin: { left:14 }
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      doc.save('GVRCattle_' + year + '.pdf');
+      alert('Cattle PDF exported.');
+    }
+
     // =====================================================================
-    // FARMING APP JS (summarized from paste.txt)
+    // FARMING APP JS
     // =====================================================================
     let currentYear = 2026;
 
@@ -2046,8 +2188,8 @@
         const tds = tr.querySelectorAll('td');
         data.logbook.push({
           date: tds[0]?.querySelector('input')?.value || '',
-          field: tds[1]?.querySelector('input')?.value || '',
-          event: tds[2]?.querySelector('input')?.value || '',
+          field: tds [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/169327967/bf0a2e19-ec73-4c67-8858-db80fc0c788e/paste.txt)?.querySelector('input')?.value || '',
+          event: tds [ppl-ai-file-upload.s3.amazonaws](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/169327967/35bad5a7-8f51-4b6d-a2dd-444fa479458c/paste-2.txt)?.querySelector('input')?.value || '',
           washed: tds[3]?.querySelector('input')?.value || '',
           input: tds[4]?.querySelector('input')?.value || '',
           harvest: tds[5]?.querySelector('input')?.value || '',
@@ -2132,18 +2274,6 @@
       recalcLoadRecordsTotals();
     }
 
-    function exportYearToJSON() {
-      const data = gatherAllData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'GVRFarm' + currentYear + '.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      alert('Year ' + currentYear + ' data exported.');
-    }
-
     function exportYearToPDF() {
       const jsPDF = window.jspdf;
       const doc = new jsPDF.jsPDF();
@@ -2164,7 +2294,7 @@
           const notesInput = document.querySelector('[data-group="' + group + '"][data-field="' + field + '"][data-type="notes"]');
           if (tonsInput && (tonsInput.value || notesInput.value)) {
             yieldsData.push([
-              (idx + 1) + 'st/nd/rd'.split('/')[idx] || (idx+1),
+              (idx + 1),
               field,
               tonsInput.value || '-',
               notesInput.value || ''
@@ -2393,7 +2523,7 @@
 
     // INIT
     window.addEventListener('load', () => {
-      // Ranch
+      // Cattle
       const initialYear = 2026;
       document.getElementById('year_home').value = initialYear;
       loadTabYear('inputs', initialYear);
@@ -2417,3 +2547,4 @@
   </script>
 </body>
 </html>
+```
