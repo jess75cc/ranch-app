@@ -282,7 +282,6 @@
         </div>
       </div>
 
-      <!-- WINTER FEED SUGGESTIONS – ONLY HERE -->
       <div class="section" id="winter_feed_suggestions">
         <h2>Winter feed suggestions – Austin, Nevada area</h2>
         <p style="font-size:12px;">
@@ -293,7 +292,7 @@
         <h3 style="font-size:13px;margin-top:6px;">Mature cows (pregnant, mid‑gestation)</h3>
         <ul style="font-size:12px;margin-top:2px;">
           <li>Target intake: about 2.0–2.2% of body weight (dry matter) per day.</li>
-          <li>For a 1,200–1,350 lb beef cow, that is roughly 25–30 lb of good‑quality grass or mixed hay “as‑fed” per day, plus 10–15% extra if wastage is high (feeding big round bales, windy/snowy conditions).</li>
+          <li>For a 1,200–1,350 lb beef cow, that is roughly 25–30 lb of good‑quality grass or mixed hay “as‑fed” per day, plus 10–15% extra if wastage is high.</li>
           <li>In extended cold snaps (below about 20°F for several days), increase energy 10–20% (more hay or a few pounds of grain/cube) to hold body condition.</li>
         </ul>
 
@@ -649,7 +648,7 @@
         </table>
         <button class="small-btn" onclick="addVaccinationRow()">+ Add vaccination</button>
 
-        <h3 style="margin-top:10px;\">Notes &amp; attachments (vaccinations)</h3>
+        <h3 style="margin-top:10px;">Notes &amp; attachments (vaccinations)</h3>
         <textarea class="notes_box" rows="3" placeholder="General notes about vaccinations..." id="notes_vaccinations" data-tab="calving"></textarea>
         <div class="attach-row">
           <button type="button" class="small-btn" onclick="this.nextElementSibling.click()">Take Photo</button>
@@ -761,7 +760,7 @@
   </div>
 
   <!-- FARMING APP -->
-  <!-- (Farming & Hay code unchanged from previous version; omitted here for brevity in this snippet) -->
+  <!-- (Your Farming & Hay HTML and JS go here exactly as in your last working version) -->
 
   <script>
     // -------- TOP-LEVEL APP SWITCHER --------
@@ -792,7 +791,21 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // (All the rest of your original JS for password, cattle recalc, farming, etc. stays the same)
+    // Cattle tab switching
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('#ranch_screen .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const id = tab.dataset.tab;
+          document.querySelectorAll('#ranch_screen .tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('#ranch_screen .tabcontent').forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(id).classList.add('active');
+        });
+      });
+    });
+
+    // (All your existing JS for password protection, cattle recalc, farming data, etc.
+    // should follow here exactly as in your last working file.)
   </script>
 </body>
 </html>
