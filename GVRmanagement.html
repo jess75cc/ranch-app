@@ -272,15 +272,12 @@
         <div class="kpi">AUMs required: <span id="kpi_aums_required">–</span></div>
       </div>
 
-      <div class="section">
-        <h2>All Data – This Year</h2>
-        <p>These actions use the current cattle year shown above.</p>
         <div class="home-actions">
-          <button class="secondary" onclick="printAllCattleData()">Print All Data</button>
-          <button class="tertiary" onclick="exportCattleToPDF()">Export to PDF</button>
-        </div>
-      </div>
-    </div>
+    <button class="secondary" onclick="printAllCattleData()">Print All Data</button>
+    <button class="tertiary" onclick="exportCattleToPDF()">Export to PDF</button>
+    <button onclick="exportCattleToSpreadsheet()">Open Cattle Spreadsheet</button>
+  </div>
+
 
     <!-- CATTLE INPUTS -->
     <div id="r_inputs" class="tabcontent">
@@ -755,10 +752,11 @@
           <p><strong>Net (Income - Expenses)</strong>: <span id="net_income">0</span></p>
         </div>
         <div class="home-actions">
-          <button class="secondary" onclick="printAllData()">Print All Data</button>
-          <button class="tertiary" onclick="exportYearToPDF()">Export to PDF</button>
-        </div>
-      </div>
+  <button class="secondary" onclick="printAllData()">Print All Data</button>
+  <button class="tertiary" onclick="exportYearToPDF()">Export to PDF</button>
+  <button onclick="exportFarmingToSpreadsheet()">Open Farming Spreadsheet</button>
+</div>
+ </div>
 
       <div class="section">
         <h3>Expenses (non-pivot)</h3>
