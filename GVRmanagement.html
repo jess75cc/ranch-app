@@ -1333,22 +1333,6 @@
       w.print();
     }
 
-    function scrollToWinterFeed() {
-      const el = document.getElementById('winter_feed_suggestions');
-      if (!el) return;
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    function toggleMarketSummary() {
-      const sec = document.getElementById('market_summary_section');
-      if (!sec) return;
-      if (sec.style.display === 'none' || sec.style.display === '') {
-        sec.style.display = 'block';
-        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        sec.style.display = 'none';
-      }
-    }
 
     // ---------- SIMPLE EDIT PASSWORD ----------
     const EDIT_PASSWORD = '0277';
