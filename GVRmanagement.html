@@ -276,15 +276,15 @@
         <h2>All Data – This Year</h2>
         <p>These actions use the current cattle year shown above.</p>
         <div class="home-actions">
-  <button class="secondary" onclick="printAllCattleData()">Print All Data</button>
-  <button class="tertiary" onclick="exportCattleToPDF()">Export to PDF</button>
-  <button onclick="scrollToWinterFeed()">Winter Feed Suggestions</button>
-  <button onclick="toggleMarketSummary()">Cattle Market Summary</button>
-  <button onclick="openSuperiorReport()">Daily Superior Market Report</button>
-</div>
+          <button class="secondary" onclick="printAllCattleData()">Print All Data</button>
+          <button class="tertiary" onclick="exportCattleToPDF()">Export to PDF</button>
+          <button onclick="scrollToWinterFeed()">Winter Feed Suggestions</button>
+          <button onclick="toggleMarketSummary()">Cattle Market Summary</button>
+        </div>
+      </div>
 
       <!-- WINTER FEED SUGGESTIONS – HOME TAB ONLY -->
-      <div class="section" id="winter_feed_suggestions" style="display:none;">
+      <div class="section" id="winter_feed_suggestions">
         <h2>Winter feed suggestions – Austin, Nevada area</h2>
         <p style="font-size:12px;">
           These are AI‑generated, general beef‑herd guidelines for a high‑desert winter near Austin, Nevada.
@@ -1339,15 +1339,10 @@
     }
 
     function scrollToWinterFeed() {
-  const el = document.getElementById('winter_feed_suggestions');
-  if (!el) return;
-  if (el.style.display === 'none' || el.style.display === '') {
-    el.style.display = 'block';
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } else {
-    el.style.display = 'none';
-  }
-}
+      const el = document.getElementById('winter_feed_suggestions');
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     function toggleMarketSummary() {
       const sec = document.getElementById('market_summary_section');
