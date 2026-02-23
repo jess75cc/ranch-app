@@ -1339,10 +1339,15 @@
     }
 
     function scrollToWinterFeed() {
-      const el = document.getElementById('winter_feed_suggestions');
-      if (!el) return;
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  const el = document.getElementById('winter_feed_suggestions');
+  if (!el) return;
+  if (el.style.display === 'none' || el.style.display === '') {
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    el.style.display = 'none';
+  }
+}
 
     function toggleMarketSummary() {
       const sec = document.getElementById('market_summary_section');
