@@ -1923,17 +1923,22 @@
       if (tabId === 'sales') saveSales(year);
     }
 
-    function loadTabYear(tabId, year) {
-      loadSimpleFields(tabId, year);
-      if (tabId === 'allotments') loadAllotments(year);
-      if (tabId === 'blm') loadPermits(year);
-      if (tabId === 'calving') {
-        loadBrandings(year);
-        loadVaccinations(year);
-      }
-      if (tabId === 'bulls') loadBullsBought(year);
-      if (tabId === 'sales') loadSales(year);
+    async function loadTabYear(tabId, year) {
+  if (tabId === 'inputs') {
+    await loadCattleTabFromSheets('inputs', year);
+  } else {
+    loadSimpleFields(tabId, year);
+    if (tabId === 'allotments') loadAllotments(year);
+    if (tabId === 'blm') loadPermits(year);
+    if (tabId === 'calving') {
+      loadBrandings(year);
+      loadVaccinations(year);
     }
+    if (tabId === 'bulls') loadBullsBought(year);
+    if (tabId === 'sales') loadSales(year);
+  }
+}
+
 
     // Cattle tab switching
     document.querySelectorAll('#ranch_screen .tab').forEach(tab => {
