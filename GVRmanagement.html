@@ -1564,9 +1564,7 @@
     // CATTLE MANAGEMENT JS
     // =====================================================================
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0P7uBrjdN7hskuD6WIu0f8f2AuCEAKylbuIHj_EMxWUkPkqza-p2mjJ_5Xf0Q9__35g/exec';
-
- const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0P7uBrjdN7hskuD6WIu0f8f2AuCEAKylbuIHj_EMxWUkPkqza-p2mjJ_5Xf0Q9__35g/exec';
-
+    
 async function apiCall(action, sheet, payload) {
   const form = new URLSearchParams();
   form.set('action', action);
@@ -1614,7 +1612,7 @@ async function apiCall(action, sheet, payload) {
     const year = currentYearByTab[tabKey];
     const data = collectCattleTabData(tabKey);
     try {
-      await apiCall('saveYear', 'cattle', { year, tab: tabKey, data });
+     apiCall('saveYear', 'cattle', { year, tab: tabKey, data });
     } catch (err) {
       console.error('Cattle save error', err);
     }
