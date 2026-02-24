@@ -3000,18 +3000,19 @@
       alert('Farming PDF exported.');
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initYearDropdown();
-      loadAll();
-      loadTabYear('inputs', currentYearByTab.inputs);
-      loadTabYear('allotments', currentYearByTab.allotments);
-      loadTabYear('bulls', currentYearByTab.bulls);
-      loadTabYear('calving', currentYearByTab.calving);
-      loadTabYear('sales', currentYearByTab.sales);
-      loadTabYear('blm', currentYearByTab.blm);
-      recalc();
-      recalcSales();
-    });
+    document.addEventListener('DOMContentLoaded', async () => {
+  initYearDropdown();
+  loadAll();
+  await loadTabYear('inputs', currentYearByTab.inputs);
+  await loadTabYear('allotments', currentYearByTab.allotments);
+  await loadTabYear('bulls', currentYearByTab.bulls);
+  await loadTabYear('calving', currentYearByTab.calving);
+  await loadTabYear('sales', currentYearByTab.sales);
+  await loadTabYear('blm', currentYearByTab.blm);
+  recalc();
+  recalcSales();
+});
+
   </script>
 </body>
 </html>
