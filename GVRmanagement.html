@@ -1536,6 +1536,81 @@
     // =====================================================================
     // CATTLE MANAGEMENT JS
     // =====================================================================
+    <script>
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0P7uBrjdN7hskuD6WIu0f8f2AuCEAKylbuIHj_EMxWUkPkqza-p2mjJ_5Xf0Q9__35g/exec';
+
+  async function apiCall(action, sheet, payload) {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, sheet, payload })
+    });
+    return res.json();
+  }
+
+  function collectCattleTabData(tabKey) {
+    const data = {};
+
+    if (tabKey === 'inputs') {
+      const ids = [
+        'bred_cows','bred_heifers','repl_heifers_open','dry_cows','cull_cows','other_cows',
+        'eli_bred','eli_dry','eli_sold',
+        'amelia_bred','amelia_dry','amelia_sold',
+        'logan_bred','logan_dry','logan_sold',
+        'bull_ratio','backup_bulls_pct','weaning_rate','steer_pct','heifer_pct','repl_heifers_kept',
+        'feed_start','feed_end','cow_intake','heifer_intake','bull_intake',
+        'hay_waste','hay_cost','aum_per_cow',
+        'notes_herd_counts','notes_family_cows','notes_breeding'
+      ];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      });
+    }
+
+    return data;
+  }
+
+  function applyCattleTabData(tabKey, data) {
+    if (tabKey === 'inputs') {
+      Object.keys(data || {}).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      });
+      if (typeof recalc === 'function') recalc();
+    }
+  }
+
+  async function saveCattleTabToSheets(tabKey) {
+    const year = currentYearByTab[tabKey];
+    const data = collectCattleTabData(tabKey);
+    try {
+      await apiCall('saveYear', 'cattle', { year, tab: tabKey, data });
+    } catch (err) {
+      console.error('Cattle save error', err);
+    }
+  }
+
+  async function loadCattleTabFromSheets(tabKey, year) {
+    try {
+      const res = await apiCall('loadYear', 'cattle', { year, tab: tabKey });
+      if (res.ok) applyCattleTabData(tabKey, res.data);
+    } catch (err) {
+      console.error('Cattle load error', err);
+    }
+  }
+
+  const currentYearByTab = {
+    home: 2026,
+    inputs: 2026,
+    allotments: 2026,
+    bulls: 2026,
+    calving: 2026,
+    sales: 2026,
+    blm: 2026
+  };
+  <!-- leave all your existing JS code here after this line -->
+
     const currentYearByTab = {
       home: '2026',
       inputs: '2026',
