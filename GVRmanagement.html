@@ -329,16 +329,13 @@
       <div class="section">
         <h2>Eli / Amelia / Logan cows</h2>
 
-        <h3 style="font-size:14px;margin:4px 0;">Eli</h3>
-        <label>Eli bred
-          <input id="eli_bred" type="number" value="0" data-tab="inputs">
-        </label>
-        <label>Eli dry
-          <input id="eli_dry" type="number" value="0" data-tab="inputs">
-        </label>
-        <label>Eli sold
-          <input id="eli_sold" type="number" value="0" data-tab="inputs">
-        </label>
+        <input id="eli_bred" type="number" value="0" data-tab="inputs"
+       oninput="saveCattleTabToSheets('inputs');">
+<input id="eli_dry" type="number" value="0" data-tab="inputs"
+       oninput="saveCattleTabToSheets('inputs');">
+<input id="eli_sold" type="number" value="0" data-tab="inputs"
+       oninput="saveCattleTabToSheets('inputs');">
+
 
         <h3 style="font-size:14px;margin:6px 0 4px;">Amelia</h3>
         <label>Amelia bred
