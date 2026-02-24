@@ -699,6 +699,19 @@
   </div>
 
   <script>
+    // Google Apps Script endpoint
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0P7uBrjdN7hskuD6WIu0f8f2AuCEAKylbuIHj_EMxWUkPkqza-p2mjJ_5Xf0Q9__35g/exec';
+
+    async function apiCall(action, sheet, payload) {
+      const form = new URLSearchParams();
+      form.set('action', action);
+      form.set('sheet', sheet);
+      form.set('payload', JSON.stringify(payload || {}));
+      const res = await fetch(GAS_URL, { method: 'POST', body: form });
+      const text = await res.text();
+      return JSON.parse(text);
+    }
+
     // Global crop year
     let currentYear = 2026;
 
@@ -1168,18 +1181,26 @@
       return data;
     }
 
-    function saveAll() {
+    async function saveAll() {
       const data = gatherAllData();
-      const key = 'gvr_farm_' + currentYear;
-      localStorage.setItem(key, JSON.stringify(data));
+      try {
+        await apiCall('saveYear', 'farming', data);
+      } catch (err) {
+        console.error('Farm save error', err);
+      }
       recalcHaySales();
       recalcFinancialTotals();
       recalcLoadRecordsTotals();
     }
 
-    function loadAll() {
-      const key = 'gvr_farm_' + currentYear;
-      const raw = localStorage.getItem(key);
+    async function loadAll() {
+      let data = null;
+      try {
+        const res = await apiCall('loadYear', 'farming', { year: currentYear });
+        if (res && res.ok) data = res.data;
+      } catch (err) {
+        console.error('Farm load error', err);
+      }
       document.getElementById('hay_sales_body').innerHTML = '';
       document.getElementById('logbook_body').innerHTML = '';
       document.getElementById('load_records_body').innerHTML = '';
@@ -1194,7 +1215,7 @@
         if (tbody) tbody.innerHTML = '';
       });
 
-      if (!raw) {
+      if (!data) {
         // First time for this year: start with one blank row per category and per dynamic table
         ['fertilizer','diesel','twine','seed',
          'equipment_cost','mechanic','equipment_purchases',
@@ -1208,8 +1229,6 @@
         recalcLoadRecordsTotals();
         return;
       }
-
-      const data = JSON.parse(raw);
 
       // Yields
       ['yield_1', 'yield_2', 'yield_3'].forEach(group => {

@@ -1595,152 +1595,48 @@ async function apiCall(action, sheet, payload) {
       });
     }
 
-    return data;
-  }
-
-  function applyCattleTabData(tabKey, data) {
-    if (tabKey === 'inputs') {
-      Object.keys(data || {}).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = data[id];
+    if (tabKey === 'allotments') {
+      data.fields = {};
+      document.querySelectorAll('[data-tab="allotments"]').forEach(el => {
+        if (el.id) data.fields[el.id] = el.value;
       });
-      if (typeof recalc === 'function') recalc();
-    }
-  }
-
-  async function saveCattleTabToSheets(tabKey) {
-    const year = currentYearByTab[tabKey];
-    const data = collectCattleTabData(tabKey);
-    try {
-     apiCall('saveYear', 'cattle', { year, tab: tabKey, data });
-    } catch (err) {
-      console.error('Cattle save error', err);
-    }
-  }
-
-  async function loadCattleTabFromSheets(tabKey, year) {
-    try {
-      const res = await apiCall('loadYear', 'cattle', { year, tab: tabKey });
-      if (res.ok) applyCattleTabData(tabKey, res.data);
-    } catch (err) {
-      console.error('Cattle load error', err);
-    }
-  }
-
-  const currentYearByTab = {
-    home: 2026,
-    inputs: 2026,
-    allotments: 2026,
-    bulls: 2026,
-    calving: 2026,
-    sales: 2026,
-    blm: 2026
-  };
-
-    function storageKey(tabId, year) {
-      return 'gvr_' + tabId + '_' + year;
-    }
-
-    function handleYearChangeAllTabs(year) {
-      Object.keys(currentYearByTab).forEach(tabId => {
-        currentYearByTab[tabId] = year;
-      });
-      loadTabYear('inputs', year);
-      loadTabYear('allotments', year);
-      loadTabYear('bulls', year);
-      loadTabYear('calving', year);
-      loadTabYear('sales', year);
-      loadTabYear('blm', year);
-      recalc();
-      recalcSales();
-    }
-
-    function saveSimpleFields(tabId, year) {
-      const data = {};
-      document.querySelectorAll('[data-tab="' + tabId + '"]').forEach(el => {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-          data[el.id] = el.value;
-        }
-      });
-      localStorage.setItem(storageKey(tabId, year) + '_fields', JSON.stringify(data));
-    }
-
-    function loadSimpleFields(tabId, year) {
-      const raw = localStorage.getItem(storageKey(tabId, year) + '_fields');
-      if (!raw) return;
-      let data;
-      try { data = JSON.parse(raw); } catch { return; }
-      Object.keys(data).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = data[id];
-      });
-    }
-
-    function saveAllotments(year) {
-      const rows = [];
+      data.allotmentRows = [];
       document.querySelectorAll('#allotment_body tr').forEach(tr => {
         const tds = tr.querySelectorAll('td input');
         if (tds.length === 2) {
-          rows.push({ name: tds[0].value, head: tds[1].value });
+          data.allotmentRows.push({ name: tds[0].value, head: tds[1].value });
         }
       });
-      localStorage.setItem(storageKey('allotments', year) + '_rows', JSON.stringify(rows));
     }
 
-    function loadAllotments(year) {
-      const body = document.getElementById('allotment_body');
-      body.innerHTML = '';
-      const raw = localStorage.getItem(storageKey('allotments', year) + '_rows');
-      if (raw) {
-        try {
-          const rows = JSON.parse(raw);
-          if (Array.isArray(rows) && rows.length) {
-            rows.forEach(r => addAllotmentRow(r.name, r.head));
-            return;
-          }
-        } catch {}
-      }
-      for (let i = 1; i <= 5; i++) addAllotmentRow('Allotment ' + i, '');
-    }
-
-    function savePermits(year) {
-      const rows = [];
+    if (tabKey === 'blm') {
+      data.fields = {};
+      document.querySelectorAll('[data-tab="blm"]').forEach(el => {
+        if (el.id) data.fields[el.id] = el.value;
+      });
+      data.permitRows = [];
       document.querySelectorAll('#permit_body tr').forEach(tr => {
         const name = tr.querySelector('.permit_name');
         const aums = tr.querySelector('.permit_aums');
         if (name && aums) {
-          rows.push({ name: name.value, aums: aums.value });
+          data.permitRows.push({ name: name.value, aums: aums.value });
         }
       });
-      localStorage.setItem(storageKey('blm', year) + '_permits', JSON.stringify(rows));
     }
 
-    function loadPermits(year) {
-      const body = document.getElementById('permit_body');
-      body.innerHTML = '';
-      const raw = localStorage.getItem(storageKey('blm', year) + '_permits');
-      if (raw) {
-        try {
-          const rows = JSON.parse(raw);
-          if (Array.isArray(rows) && rows.length) {
-            rows.forEach(r => addPermitRow(r.name, r.aums));
-            return;
-          }
-        } catch {}
-      }
-      addPermitRow('Main BLM', '');
-      addPermitRow('Private lease', '');
-    }
-
-    function saveBrandings(year) {
-      const rows = [];
+    if (tabKey === 'calving') {
+      data.fields = {};
+      document.querySelectorAll('[data-tab="calving"]').forEach(el => {
+        if (el.id) data.fields[el.id] = el.value;
+      });
+      data.brandingRows = [];
       document.querySelectorAll('#branding_body tr').forEach(tr => {
         const name = tr.querySelector('.brand_name');
         const date = tr.querySelector('.brand_date');
         const calves = tr.querySelector('.brand_calves');
         const notes = tr.querySelector('.brand_notes');
         if (name) {
-          rows.push({
+          data.brandingRows.push({
             name: name.value,
             date: date ? date.value : '',
             calves: calves ? calves.value : '',
@@ -1748,35 +1644,14 @@ async function apiCall(action, sheet, payload) {
           });
         }
       });
-      localStorage.setItem(storageKey('calving', year) + '_brandings', JSON.stringify(rows));
-    }
-
-    function loadBrandings(year) {
-      const body = document.getElementById('branding_body');
-      body.innerHTML = '';
-      const raw = localStorage.getItem(storageKey('calving', year) + '_brandings');
-      if (raw) {
-        try {
-          const rows = JSON.parse(raw);
-          if (Array.isArray(rows) && rows.length) {
-            rows.forEach(r => addBrandingRow(r.name, r.date, r.calves, r.notes));
-            return;
-          }
-        } catch {}
-      }
-      addBrandingRow('Home ranch', '', '', '');
-      addBrandingRow('BLM allotment', '', '', '');
-    }
-
-    function saveVaccinations(year) {
-      const rows = [];
+      data.vaccinationRows = [];
       document.querySelectorAll('#vaccination_body tr').forEach(tr => {
         const date = tr.querySelector('.vacc_date');
         const product = tr.querySelector('.vacc_product');
         const head = tr.querySelector('.vacc_head');
         const notes = tr.querySelector('.vacc_notes');
         if (date || product) {
-          rows.push({
+          data.vaccinationRows.push({
             date: date ? date.value : '',
             product: product ? product.value : '',
             head: head ? head.value : '',
@@ -1784,27 +1659,14 @@ async function apiCall(action, sheet, payload) {
           });
         }
       });
-      localStorage.setItem(storageKey('calving', year) + '_vaccinations', JSON.stringify(rows));
     }
 
-    function loadVaccinations(year) {
-      const body = document.getElementById('vaccination_body');
-      body.innerHTML = '';
-      const raw = localStorage.getItem(storageKey('calving', year) + '_vaccinations');
-      if (raw) {
-        try {
-          const rows = JSON.parse(raw);
-          if (Array.isArray(rows) && rows.length) {
-            rows.forEach(r => addVaccinationRow(r.date, r.product, r.head, r.notes));
-            return;
-          }
-        } catch {}
-      }
-      addVaccinationRow('', '', '', '');
-    }
-
-    function saveBullsBought(year) {
-      const rows = [];
+    if (tabKey === 'bulls') {
+      data.fields = {};
+      document.querySelectorAll('[data-tab="bulls"]').forEach(el => {
+        if (el.id) data.fields[el.id] = el.value;
+      });
+      data.bullsBoughtRows = [];
       document.querySelectorAll('#bulls_bought_body tr').forEach(tr => {
         const date = tr.querySelector('.bull_date');
         const num = tr.querySelector('.bull_num');
@@ -1812,7 +1674,7 @@ async function apiCall(action, sheet, payload) {
         const loc = tr.querySelector('.bull_location');
         const notes = tr.querySelector('.bull_notes');
         if (date || num || price || loc) {
-          rows.push({
+          data.bullsBoughtRows.push({
             date: date ? date.value : '',
             num: num ? num.value : '',
             price: price ? price.value : '',
@@ -1821,27 +1683,14 @@ async function apiCall(action, sheet, payload) {
           });
         }
       });
-      localStorage.setItem(storageKey('bulls', year) + '_bought', JSON.stringify(rows));
     }
 
-    function loadBullsBought(year) {
-      const body = document.getElementById('bulls_bought_body');
-      body.innerHTML = '';
-      const raw = localStorage.getItem(storageKey('bulls', year) + '_bought');
-      if (raw) {
-        try {
-          const rows = JSON.parse(raw);
-          if (Array.isArray(rows) && rows.length) {
-            rows.forEach(r => addBullBoughtRow(r.date, r.num, r.price, r.location, r.notes));
-            return;
-          }
-        } catch {}
-      }
-      addBullBoughtRow('', '', '', '', '');
-    }
-
-    function saveSales(year) {
-      function grab(bodyId) {
+    if (tabKey === 'sales') {
+      data.fields = {};
+      document.querySelectorAll('[data-tab="sales"]').forEach(el => {
+        if (el.id) data.fields[el.id] = el.value;
+      });
+      function grabSaleRows(bodyId) {
         const rows = [];
         document.querySelectorAll('#' + bodyId + ' tr').forEach(tr => {
           const date = tr.querySelector('.sale_date');
@@ -1867,14 +1716,100 @@ async function apiCall(action, sheet, payload) {
         });
         return rows;
       }
-      const steerRows = grab('steer_sales_body');
-      const heiferRows = grab('heifer_sales_body');
-      localStorage.setItem(storageKey('sales', year) + '_steers', JSON.stringify(steerRows));
-      localStorage.setItem(storageKey('sales', year) + '_heifers', JSON.stringify(heiferRows));
+      data.steerRows = grabSaleRows('steer_sales_body');
+      data.heiferRows = grabSaleRows('heifer_sales_body');
     }
 
-    function loadSales(year) {
-      function fill(bodyId, rows) {
+    return data;
+  }
+
+  function applyCattleTabData(tabKey, data) {
+    if (tabKey === 'inputs') {
+      Object.keys(data || {}).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      });
+      if (typeof recalc === 'function') recalc();
+    }
+
+    if (tabKey === 'allotments') {
+      const fields = (data && data.fields) || {};
+      Object.keys(fields).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = fields[id];
+      });
+      const body = document.getElementById('allotment_body');
+      body.innerHTML = '';
+      const rows = (data && data.allotmentRows) || [];
+      if (rows.length) {
+        rows.forEach(r => addAllotmentRow(r.name, r.head));
+      } else {
+        for (let i = 1; i <= 5; i++) addAllotmentRow('Allotment ' + i, '');
+      }
+    }
+
+    if (tabKey === 'blm') {
+      const fields = (data && data.fields) || {};
+      Object.keys(fields).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = fields[id];
+      });
+      const body = document.getElementById('permit_body');
+      body.innerHTML = '';
+      const rows = (data && data.permitRows) || [];
+      if (rows.length) {
+        rows.forEach(r => addPermitRow(r.name, r.aums));
+      } else {
+        addPermitRow('Main BLM', '');
+        addPermitRow('Private lease', '');
+      }
+      if (typeof recalc === 'function') recalc();
+    }
+
+    if (tabKey === 'calving') {
+      const fields = (data && data.fields) || {};
+      Object.keys(fields).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = fields[id];
+      });
+      const brandBody = document.getElementById('branding_body');
+      brandBody.innerHTML = '';
+      const brandRows = (data && data.brandingRows) || [];
+      if (brandRows.length) {
+        brandRows.forEach(r => addBrandingRow(r.name, r.date, r.calves, r.notes));
+      } else {
+        addBrandingRow('Home ranch', '', '', '');
+        addBrandingRow('BLM allotment', '', '', '');
+      }
+      const vaccBody = document.getElementById('vaccination_body');
+      vaccBody.innerHTML = '';
+      const vaccRows = (data && data.vaccinationRows) || [];
+      if (vaccRows.length) {
+        vaccRows.forEach(r => addVaccinationRow(r.date, r.product, r.head, r.notes));
+      } else {
+        addVaccinationRow('', '', '', '');
+      }
+    }
+
+    if (tabKey === 'bulls') {
+      const fields = (data && data.fields) || {};
+      Object.keys(fields).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = fields[id];
+      });
+      const body = document.getElementById('bulls_bought_body');
+      body.innerHTML = '';
+      const rows = (data && data.bullsBoughtRows) || [];
+      if (rows.length) {
+        rows.forEach(r => addBullBoughtRow(r.date, r.num, r.price, r.location, r.notes));
+      } else {
+        addBullBoughtRow('', '', '', '', '');
+      }
+      if (typeof recalc === 'function') recalc();
+    }
+
+    if (tabKey === 'sales') {
+      function fillSaleRows(bodyId, rows) {
         const body = document.getElementById(bodyId);
         body.innerHTML = '';
         if (!rows || !rows.length) return;
@@ -1900,45 +1835,66 @@ async function apiCall(action, sheet, payload) {
           body.appendChild(tr);
         });
       }
+      const steerRows = (data && data.steerRows) || [];
+      const heiferRows = (data && data.heiferRows) || [];
+      if (!steerRows.length) addSteerSaleRow(); else fillSaleRows('steer_sales_body', steerRows);
+      if (!heiferRows.length) addHeiferSaleRow(); else fillSaleRows('heifer_sales_body', heiferRows);
+      recalcSales();
+    }
+  }
 
-      const steerRaw = localStorage.getItem(storageKey('sales', year) + '_steers');
-      const heiferRaw = localStorage.getItem(storageKey('sales', year) + '_heifers');
-      let steerRows = [], heiferRows = [];
-      try { if (steerRaw) steerRows = JSON.parse(steerRaw); } catch {}
-      try { if (heiferRaw) heiferRows = JSON.parse(heiferRaw); } catch {}
-      if (!steerRows.length) addSteerSaleRow(); else fill('steer_sales_body', steerRows);
-      if (!heiferRows.length) addHeiferSaleRow(); else fill('heifer_sales_body', heiferRows);
+  async function saveCattleTabToSheets(tabKey) {
+    const year = currentYearByTab[tabKey];
+    const data = collectCattleTabData(tabKey);
+    try {
+      await apiCall('saveYear', 'cattle', { year, tab: tabKey, data });
+    } catch (err) {
+      console.error('Cattle save error', err);
+    }
+  }
+
+  async function loadCattleTabFromSheets(tabKey, year) {
+    try {
+      const res = await apiCall('loadYear', 'cattle', { year, tab: tabKey });
+      if (res && res.ok) applyCattleTabData(tabKey, res.data);
+      else applyCattleTabData(tabKey, null);
+    } catch (err) {
+      console.error('Cattle load error', err);
+      applyCattleTabData(tabKey, null);
+    }
+  }
+
+  const currentYearByTab = {
+    home: 2026,
+    inputs: 2026,
+    allotments: 2026,
+    bulls: 2026,
+    calving: 2026,
+    sales: 2026,
+    blm: 2026
+  };
+
+    function handleYearChangeAllTabs(year) {
+      Object.keys(currentYearByTab).forEach(tabId => {
+        currentYearByTab[tabId] = year;
+      });
+      loadTabYear('inputs', year);
+      loadTabYear('allotments', year);
+      loadTabYear('bulls', year);
+      loadTabYear('calving', year);
+      loadTabYear('sales', year);
+      loadTabYear('blm', year);
+      recalc();
       recalcSales();
     }
 
-    function saveCurrentTabYear(tabId) {
-      const year = currentYearByTab[tabId];
-      saveSimpleFields(tabId, year);
-      if (tabId === 'allotments') saveAllotments(year);
-      if (tabId === 'blm') savePermits(year);
-      if (tabId === 'calving') {
-        saveBrandings(year);
-        saveVaccinations(year);
-      }
-      if (tabId === 'bulls') saveBullsBought(year);
-      if (tabId === 'sales') saveSales(year);
+    async function saveCurrentTabYear(tabId) {
+      await saveCattleTabToSheets(tabId);
     }
 
     async function loadTabYear(tabId, year) {
-  if (tabId === 'inputs') {
-    await loadCattleTabFromSheets('inputs', year);
-  } else {
-    loadSimpleFields(tabId, year);
-    if (tabId === 'allotments') loadAllotments(year);
-    if (tabId === 'blm') loadPermits(year);
-    if (tabId === 'calving') {
-      loadBrandings(year);
-      loadVaccinations(year);
+      await loadCattleTabFromSheets(tabId, year);
     }
-    if (tabId === 'bulls') loadBullsBought(year);
-    if (tabId === 'sales') loadSales(year);
-  }
-}
 
 
     // Cattle tab switching
@@ -2480,9 +2436,13 @@ async function apiCall(action, sheet, payload) {
       return data;
     }
 
-    function saveAll() {
+    async function saveAll() {
       const data = gatherAllData();
-      localStorage.setItem('gvr_farm_' + currentYear, JSON.stringify(data));
+      try {
+        await apiCall('saveYear', 'farming', data);
+      } catch (err) {
+        console.error('Farm save error', err);
+      }
       recalcFinancialTotals();
       recalcLoadRecordsTotals();
       recalcYearEndTotals();
@@ -2490,10 +2450,16 @@ async function apiCall(action, sheet, payload) {
       crossCheckYearEnd();
     }
 
-    function loadAll() {
+    async function loadAll() {
       document.getElementById('homeYearDisplay').textContent = currentYear;
-      const raw = localStorage.getItem('gvr_farm_' + currentYear);
-      if (!raw) {
+      let data = null;
+      try {
+        const res = await apiCall('loadYear', 'farming', { year: currentYear });
+        if (res && res.ok) data = res.data;
+      } catch (err) {
+        console.error('Farm load error', err);
+      }
+      if (!data) {
         document.querySelectorAll('[data-group^="yield"]').forEach(input => input.value = '');
         document.querySelectorAll('[data-group="inputs_notes"],[data-group="hay_notes"],[data-group="loadrecords_notes"],[data-group="logbook_notes"]').forEach(t => t.value = '');
         document.getElementById('haysales_body').innerHTML = '';
@@ -2515,9 +2481,6 @@ async function apiCall(action, sheet, payload) {
         crossCheckYearEnd();
         return;
       }
-
-      let data;
-      try { data = JSON.parse(raw); } catch { return; }
 
       ['yield1','yield2','yield3'].forEach(group => {
         const groupData = data.yields && data.yields[group] ? data.yields[group] : {};
@@ -3020,7 +2983,7 @@ async function apiCall(action, sheet, payload) {
 
     document.addEventListener('DOMContentLoaded', async () => {
   initYearDropdown();
-  loadAll();
+  await loadAll();
   await loadTabYear('inputs', currentYearByTab.inputs);
   await loadTabYear('allotments', currentYearByTab.allotments);
   await loadTabYear('bulls', currentYearByTab.bulls);
