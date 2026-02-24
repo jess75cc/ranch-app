@@ -1565,7 +1565,9 @@
     // =====================================================================
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0P7uBrjdN7hskuD6WIu0f8f2AuCEAKylbuIHj_EMxWUkPkqza-p2mjJ_5Xf0Q9__35g/exec';
 
- async function apiCall(action, sheet, payload) {
+ const GAS_URL = 'https://script.google.com/macros/s/AKfycbx0P7uBrjdN7hskuD6WIu0f8f2AuCEAKylbuIHj_EMxWUkPkqza-p2mjJ_5Xf0Q9__35g/exec';
+
+async function apiCall(action, sheet, payload) {
   const form = new URLSearchParams();
   form.set('action', action);
   form.set('sheet', sheet);
@@ -1575,23 +1577,6 @@
   const text = await res.text();
   return JSON.parse(text);
 }
-
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    body: form
-  });
-
-  const text = await res.text();
-
-  // If Google returns HTML (permissions/login), this will help you see it in console
-  try {
-    return JSON.parse(text);
-  } catch (err) {
-    console.error('Apps Script returned non-JSON:', text.slice(0, 500));
-    throw err;
-  }
-}
-
   function collectCattleTabData(tabKey) {
     const data = {};
 
