@@ -289,26 +289,33 @@
         <button class="small-btn" onclick="printInnerTab('r_inputs')">Export PDF</button>
       </div>
 
-      <div class="section">
-        <h2>Herd counts (head)</h2>
-        <label>Bred cows
-          <input id="bred_cows" type="number" value="1000" data-tab="inputs">
-        </label>
-        <label>Bred heifers
-          <input id="bred_heifers" type="number" value="0" data-tab="inputs">
-        </label>
-        <label>Replacement heifers (open)
-          <input id="repl_heifers_open" type="number" value="200" data-tab="inputs">
-        </label>
-        <label>Dry cows
-          <input id="dry_cows" type="number" value="0" data-tab="inputs">
-        </label>
-        <label>Cull cows
-          <input id="cull_cows" type="number" value="0" data-tab="inputs">
-        </label>
-        <label>Other (enter)
-          <input id="other_cows" type="number" value="0" data-tab="inputs">
-        </label>
+     <div class="section">
+  <h2>Herd counts (head)</h2>
+  <label>Bred cows
+    <input id="bred_cows" type="number" value="1000" data-tab="inputs"
+           oninput="saveCattleTabToSheets('inputs'); recalc();">
+  </label>
+  <label>Bred heifers
+    <input id="bred_heifers" type="number" value="0" data-tab="inputs"
+           oninput="saveCattleTabToSheets('inputs'); recalc();">
+  </label>
+  <label>Replacement heifers (open)
+    <input id="repl_heifers_open" type="number" value="200" data-tab="inputs"
+           oninput="saveCattleTabToSheets('inputs'); recalc();">
+  </label>
+  <label>Dry cows
+    <input id="dry_cows" type="number" value="0" data-tab="inputs"
+           oninput="saveCattleTabToSheets('inputs'); recalc();">
+  </label>
+  <label>Cull cows
+    <input id="cull_cows" type="number" value="0" data-tab="inputs"
+           oninput="saveCattleTabToSheets('inputs'); recalc();">
+  </label>
+  <label>Other (enter)
+    <input id="other_cows" type="number" value="0" data-tab="inputs"
+           oninput="saveCattleTabToSheets('inputs'); recalc();">
+  </label>
+</div>
 
         <h3 style="margin-top:10px;">Notes &amp; attachments</h3>
         <textarea class="notes_box" rows="3" placeholder="Notes about herd counts..." id="notes_herd_counts" data-tab="inputs"></textarea>
